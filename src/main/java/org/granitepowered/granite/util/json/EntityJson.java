@@ -35,8 +35,8 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import org.granitepowered.granite.Granite;
+import org.granitepowered.granite.loader.Classes;
 import org.granitepowered.granite.impl.entity.GraniteEntity;
-import org.granitepowered.granite.mappings.Mappings;
 import org.granitepowered.granite.mc.MCEntity;
 import org.granitepowered.granite.mc.MCWorld;
 
@@ -74,7 +74,7 @@ public class EntityJson implements JsonSerializer<GraniteEntity>, JsonDeserializ
 
         MCWorld world = unwrap(Granite.getInstance().getServer().getWorlds().iterator().next());
 
-        MCEntity entity = (MCEntity) Mappings.invokeStatic("EntityList", "createEntityByName", type != null ? type : "XPOrb", world);
+        MCEntity entity = (MCEntity) Classes.invokeStatic("EntityList", "createEntityByName", type != null ? type : "XPOrb", world);
         if (!entity.getName().equals(name)) {
             entity.setCustomNameTag(name);
         }
@@ -86,7 +86,7 @@ public class EntityJson implements JsonSerializer<GraniteEntity>, JsonDeserializ
     public JsonElement serialize(GraniteEntity src, Type typeOfSrc, JsonSerializationContext context) {
         String id = src.getUniqueId().toString();
         try {
-            Map<Class<?>, String> map = (Map<Class<?>, String>) Mappings.getField("EntityList", "classToStringMapping").get(null);
+            Map<Class<?>, String> map = (Map<Class<?>, String>) Classes.getField("EntityList", "classToStringMapping").get(null);
             String type = map.get(src.obj.getClass());
             String name = ((MCEntity) unwrap(src)).getName();
 

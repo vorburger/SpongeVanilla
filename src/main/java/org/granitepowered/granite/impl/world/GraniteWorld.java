@@ -33,11 +33,11 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.NotImplementedException;
+import org.granitepowered.granite.loader.Classes;
 import org.granitepowered.granite.composite.Composite;
 import org.granitepowered.granite.impl.block.GraniteBlockLoc;
 import org.granitepowered.granite.impl.entity.GraniteEntity;
 import org.granitepowered.granite.impl.world.biome.GraniteBiomeType;
-import org.granitepowered.granite.mappings.Mappings;
 import org.granitepowered.granite.mc.MCBlockPos;
 import org.granitepowered.granite.mc.MCDerivedWorldInfo;
 import org.granitepowered.granite.mc.MCEntity;
@@ -219,7 +219,7 @@ public class GraniteWorld extends Composite<MCWorld> implements World {
 
     @Override
     public Optional<Entity> createEntity(EntityType type, Vector3d position) {
-        MCEntity entity = (MCEntity) Mappings.invokeStatic("createEntityByName", type.getId(), obj);
+        MCEntity entity = (MCEntity) Classes.invokeStatic("createEntityByName", type.getId(), obj);
         entity.setPositionAndUpdate(position.getX(), position.getY(), position.getZ());
         boolean ret = obj.spawnEntityInWorld(entity);
 

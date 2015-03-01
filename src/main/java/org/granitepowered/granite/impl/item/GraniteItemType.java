@@ -25,12 +25,14 @@ package org.granitepowered.granite.impl.item;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.granitepowered.granite.Granite;
+import org.granitepowered.granite.loader.Classes;
 import org.granitepowered.granite.composite.Composite;
 import org.granitepowered.granite.impl.text.translation.GraniteTranslation;
-import org.granitepowered.granite.mappings.Mappings;
 import org.granitepowered.granite.mc.MCItem;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.translation.Translation;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class GraniteItemType<T extends MCItem> extends Composite<T> implements ItemType {
 
@@ -41,12 +43,14 @@ public class GraniteItemType<T extends MCItem> extends Composite<T> implements I
     @Override
     public String getId() {
         try {
-            Object registry = Mappings.getField("Item", "itemRegistry").get(null);
-            Object resourceLocation = Mappings.invoke(registry, "getNameForObject", obj);
+            Object registry = Classes.getField("Item", "itemRegistry").get(null);
+            Object resourceLocation = Classes.getMethod(registry.getClass(), "getNameForObject").invoke(registry, obj);
 
-            return (String) Mappings.getField(resourceLocation.getClass(), "resourcePath").get(resourceLocation);
+            return (String) Classes.getField(resourceLocation.getClass(), "resourcePath").get(resourceLocation);
         } catch (IllegalAccessException e) {
             Granite.error(e);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
         return "error";
     }

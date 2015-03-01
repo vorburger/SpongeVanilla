@@ -38,7 +38,7 @@ public class GraniteEntityRabbit extends GraniteEntityAnimal<MCEntityRabbit> imp
 
     @Override
     public RabbitType getRabbitType() {
-        return Granite.instance.getGameRegistry().rabbitTypes.get(obj.fieldGet$dataWatcher().getWatchedObject(18).fieldGet$watchedObject());
+        return Granite.getInstance().getGameRegistry().rabbitTypes.get(obj.fieldGet$dataWatcher().getWatchedObject(18).fieldGet$watchedObject());
     }
 
     @Override

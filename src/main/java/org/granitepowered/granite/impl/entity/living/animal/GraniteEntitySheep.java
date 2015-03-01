@@ -48,7 +48,7 @@ public class GraniteEntitySheep extends GraniteEntityAnimal<MCEntitySheep> imple
 
     @Override
     public DyeColor getColor() {
-        return Granite.instance.getGameRegistry().dyeColors.get((byte) obj.fieldGet$dataWatcher().getWatchedObject(16).fieldGet$watchedObject() & 15);
+        return Granite.getInstance().getGameRegistry().dyeColors.get((byte) obj.fieldGet$dataWatcher().getWatchedObject(16).fieldGet$watchedObject() & 15);
     }
 
     @Override

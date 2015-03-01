@@ -31,9 +31,9 @@ import com.flowpowered.math.vector.Vector3f;
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.NotImplementedException;
 import org.granitepowered.granite.Granite;
+import org.granitepowered.granite.loader.Classes;
 import org.granitepowered.granite.impl.entity.GraniteEntity;
 import org.granitepowered.granite.impl.potion.GranitePotionEffect;
-import org.granitepowered.granite.mappings.Mappings;
 import org.granitepowered.granite.mc.MCDamageSource;
 import org.granitepowered.granite.mc.MCEntityLivingBase;
 import org.granitepowered.granite.mc.MCPotion;
@@ -59,7 +59,7 @@ public class GraniteEntityLivingBase<T extends MCEntityLivingBase> extends Grani
     @Override
     public void damage(double amount) {
         try {
-            obj.damageEntity((MCDamageSource) Mappings.getField("DamageSource", "generic").get(null), (float) amount);
+            obj.damageEntity((MCDamageSource) Classes.getField("DamageSource", "generic").get(null), (float) amount);
         } catch (IllegalAccessException e) {
             Granite.error(e);
         }

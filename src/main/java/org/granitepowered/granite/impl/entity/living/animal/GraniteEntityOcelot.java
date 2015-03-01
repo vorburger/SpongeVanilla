@@ -37,7 +37,7 @@ public class GraniteEntityOcelot extends GraniteEntityTameable<MCEntityOcelot> i
 
     @Override
     public OcelotType getOcelotType() {
-        return Granite.instance.getGameRegistry().ocelotTypes.get(obj.fieldGet$dataWatcher().getWatchedObject(18).fieldGet$watchedObject());
+        return Granite.getInstance().getGameRegistry().ocelotTypes.get(obj.fieldGet$dataWatcher().getWatchedObject(18).fieldGet$watchedObject());
     }
 
     @Override

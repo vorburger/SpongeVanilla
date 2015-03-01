@@ -46,7 +46,7 @@ public class GraniteEntitySkeleton extends GraniteEntityMonster<MCEntitySkeleton
 
     @Override
     public SkeletonType getSkeletonType() {
-        return Granite.instance.getGameRegistry().skeletonTypes.get(obj.fieldGet$dataWatcher().getWatchedObject(13).fieldGet$watchedObject());
+        return Granite.getInstance().getGameRegistry().skeletonTypes.get(obj.fieldGet$dataWatcher().getWatchedObject(13).fieldGet$watchedObject());
     }
 
     @Override

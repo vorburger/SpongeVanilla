@@ -31,9 +31,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.apache.commons.lang3.NotImplementedException;
 import org.granitepowered.granite.Granite;
+import org.granitepowered.granite.loader.Classes;
 import org.granitepowered.granite.composite.Composite;
 import org.granitepowered.granite.impl.world.GraniteWorld;
-import org.granitepowered.granite.mappings.Mappings;
 import org.granitepowered.granite.mc.MCEntityPlayerMP;
 import org.granitepowered.granite.mc.MCServer;
 import org.granitepowered.granite.mc.MCServerConfigurationManager;
@@ -72,7 +72,7 @@ public class GraniteServer extends Composite<MCServer> implements Game, Server {
     public static String version;
 
     public GraniteServer() {
-        super(Mappings.getClass("DedicatedServer"), new Class[]{File.class}, new File("worlds/"));
+        super(Classes.getClass("DedicatedServer"), new Class[]{File.class}, new File("worlds/"));
         obj.startServerThread();
     }
 
@@ -88,22 +88,22 @@ public class GraniteServer extends Composite<MCServer> implements Game, Server {
 
     @Override
     public PluginManager getPluginManager() {
-        return Granite.instance.getPluginManager();
+        return Granite.getInstance().getPluginManager();
     }
 
     @Override
     public EventManager getEventManager() {
-        return Granite.instance.getEventManager();
+        return Granite.getInstance().getEventManager();
     }
 
     @Override
     public GameRegistry getRegistry() {
-        return Granite.instance.getGameRegistry();
+        return Granite.getInstance().getGameRegistry();
     }
 
     @Override
     public ServiceManager getServiceManager() {
-        return Granite.instance.getServiceManager();
+        return Granite.getInstance().getServiceManager();
     }
 
     @Override
@@ -118,22 +118,22 @@ public class GraniteServer extends Composite<MCServer> implements Game, Server {
 
     @Override
     public CommandService getCommandDispatcher() {
-        return Granite.instance.getCommandService();
+        return Granite.getInstance().getCommandService();
     }
 
     @Override
     public String getApiVersion() {
-        return "Sponge" + Granite.instance.getApiVersion();
+        return "Sponge" + Granite.getInstance().getApiVersion();
     }
 
     @Override
     public String getImplementationVersion() {
-        return "Granite " + Granite.instance.getVersion();
+        return "Granite " + Granite.getInstance().getVersion();
     }
 
     @Override
     public MinecraftVersion getMinecraftVersion() {
-        return Granite.instance.getMinecraftVersion();
+        return Granite.getInstance().getMinecraftVersion();
     }
 
     @Override

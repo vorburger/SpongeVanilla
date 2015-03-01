@@ -27,8 +27,8 @@ import static org.granitepowered.granite.util.MinecraftUtils.unwrap;
 import static org.granitepowered.granite.util.MinecraftUtils.wrap;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.granitepowered.granite.loader.Classes;
 import org.granitepowered.granite.composite.Composite;
-import org.granitepowered.granite.mappings.Mappings;
 import org.granitepowered.granite.mc.MCBlock;
 import org.granitepowered.granite.mc.MCItem;
 import org.granitepowered.granite.mc.MCItemStack;
@@ -68,7 +68,7 @@ public class GraniteItemStack extends Composite<MCItemStack> implements ItemStac
     }
 
     public GraniteItemStack(MCItem item, int amount, int damage) {
-        super(Mappings.getClass("ItemStack"), new Class[]{Mappings.getClass("Item"), int.class, int.class}, item, amount, damage);
+        super(Classes.getClass("ItemStack"), new Class[]{Classes.getClass("Item"), int.class, int.class}, item, amount, damage);
     }
 
     public GraniteItemStack(MCBlock block, int amount) {
@@ -76,7 +76,7 @@ public class GraniteItemStack extends Composite<MCItemStack> implements ItemStac
     }
 
     public GraniteItemStack(MCBlock block, int amount, int damage) {
-        super(Mappings.getClass("ItemStack"), new Class[]{Mappings.getClass("Block"), int.class, int.class}, block, amount, damage);
+        super(Classes.getClass("ItemStack"), new Class[]{Classes.getClass("Block"), int.class, int.class}, block, amount, damage);
     }
 
     @Override

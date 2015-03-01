@@ -58,7 +58,7 @@ public class GranitePluginManager implements PluginManager {
     }
 
     public void loadPlugins() {
-        File[] files = Granite.instance.getServerConfig().getPluginDirectory().listFiles(new FilenameFilter() {
+        File[] files = Granite.getInstance().getServerConfig().getPluginDirectory().listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File arg0, String arg1) {
                 return arg1.endsWith(".jar");
@@ -69,7 +69,7 @@ public class GranitePluginManager implements PluginManager {
             ArrayList<PluginContainer> pluginContainers = new ArrayList<PluginContainer>();
 
             for (File plugin : files) {
-                Granite.instance.getLogger().info("Loading jarfile plugins/{}", plugin.getName());
+                Granite.getInstance().getLogger().info("Loading jarfile plugins/{}", plugin.getName());
 
                 try {
                     URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{plugin.toURI().toURL()});
@@ -130,10 +130,10 @@ public class GranitePluginManager implements PluginManager {
 
                 if (missingDependencies.size() == 0) {
                     plugins.add(plugin);
-                    Granite.instance.getEventManager().register(plugin.getInstance(), plugin.getInstance());
-                    Granite.instance.getLogger().info("Loaded {} ({})!", plugin.getName(), plugin.getVersion());
+                    Granite.getInstance().getEventManager().register(plugin.getInstance(), plugin.getInstance());
+                    Granite.getInstance().getLogger().info("Loaded {} ({})!", plugin.getName(), plugin.getVersion());
                 } else {
-                    Granite.instance.getLogger().info("Could not load {} ({})! Missing dependencies: {}", plugin.getName(), plugin.getVersion(),
+                    Granite.getInstance().getLogger().info("Could not load {} ({})! Missing dependencies: {}", plugin.getName(), plugin.getVersion(),
                                                       missingDependencies.toString());
                 }
             }

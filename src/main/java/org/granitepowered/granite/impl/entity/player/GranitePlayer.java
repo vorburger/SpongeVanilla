@@ -32,6 +32,7 @@ import com.flowpowered.math.vector.Vector3f;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.NotImplementedException;
+import org.granitepowered.granite.loader.Classes;
 import org.granitepowered.granite.impl.effect.particle.GraniteParticleEffect;
 import org.granitepowered.granite.impl.effect.particle.GraniteParticleType;
 import org.granitepowered.granite.impl.item.GraniteItemBlock;
@@ -39,7 +40,6 @@ import org.granitepowered.granite.impl.item.GraniteItemType;
 import org.granitepowered.granite.impl.text.chat.GraniteChatType;
 import org.granitepowered.granite.impl.text.message.GraniteMessage;
 import org.granitepowered.granite.impl.text.message.GraniteMessageBuilder;
-import org.granitepowered.granite.mappings.Mappings;
 import org.granitepowered.granite.mc.MCEntity;
 import org.granitepowered.granite.mc.MCEntityPlayerMP;
 import org.granitepowered.granite.mc.MCItemStack;
@@ -136,7 +136,7 @@ public class GranitePlayer extends GraniteEntityPlayer<MCEntityPlayerMP> impleme
         if (title.isReset() || title.isClear()) {
             MCPacketTitleType
                     type =
-                    (MCPacketTitleType) MinecraftUtils.enumValue(Mappings.getClass("S45PacketTitle$Type"), title.isReset() ? 4 : 3);
+                    (MCPacketTitleType) MinecraftUtils.enumValue(Classes.getClass("S45PacketTitle$Type"), title.isReset() ? 4 : 3);
 
             MCPacket packet = Instantiator.get().newPacketTitle(type, null);
             obj.fieldGet$playerNetServerHandler().sendPacket(packet);
@@ -152,14 +152,14 @@ public class GranitePlayer extends GraniteEntityPlayer<MCEntityPlayerMP> impleme
         }
 
         if (title.getTitle().isPresent()) {
-            MCPacketTitleType type = (MCPacketTitleType) MinecraftUtils.enumValue(Mappings.getClass("S45PacketTitle$Type"), 0);
+            MCPacketTitleType type = (MCPacketTitleType) MinecraftUtils.enumValue(Classes.getClass("S45PacketTitle$Type"), 0);
 
             MCPacket packet = Instantiator.get().newPacketTitle(type, MinecraftUtils.graniteToMinecraftChatComponent(title.getTitle().get()));
             obj.fieldGet$playerNetServerHandler().sendPacket(packet);
         }
 
         if (title.getTitle().isPresent()) {
-            MCPacketTitleType type = (MCPacketTitleType) MinecraftUtils.enumValue(Mappings.getClass("S45PacketTitle$Type"), 1);
+            MCPacketTitleType type = (MCPacketTitleType) MinecraftUtils.enumValue(Classes.getClass("S45PacketTitle$Type"), 1);
 
             MCPacket packet = Instantiator.get().newPacketTitle(type, MinecraftUtils.graniteToMinecraftChatComponent(title.getSubtitle().get()));
             obj.fieldGet$playerNetServerHandler().sendPacket(packet);
@@ -305,7 +305,7 @@ public class GranitePlayer extends GraniteEntityPlayer<MCEntityPlayerMP> impleme
 
         Vector3f offset = particleEffect.getOffset();
 
-        Enum internal = (Enum) Mappings.getClass("EnumParticleTypes").getEnumConstants()[type.getId()];
+        Enum internal = (Enum) Classes.getClass("EnumParticleTypes").getEnumConstants()[type.getId()];
 
         int count = particleEffect.getCount();
         int[] extra = new int[0];
@@ -336,7 +336,7 @@ public class GranitePlayer extends GraniteEntityPlayer<MCEntityPlayerMP> impleme
             if (type.getId() == ((GraniteParticleType) ParticleTypes.ITEM_CRACK).getId()) {
                 try {
                     id =
-                            ((MCRegistryNamespaced) Mappings.getField("Item", "itemRegistry").get(null))
+                            ((MCRegistryNamespaced) Classes.getField("Item", "itemRegistry").get(null))
                                     .getIDForObject(((GraniteItemType) itemType).obj);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
@@ -348,7 +348,7 @@ public class GranitePlayer extends GraniteEntityPlayer<MCEntityPlayerMP> impleme
                 if (itemType instanceof ItemBlock) {
                     try {
                         id =
-                                ((MCRegistryNamespaced) Mappings.getField("Block", "blockRegistry").get(null))
+                                ((MCRegistryNamespaced) Classes.getField("Block", "blockRegistry").get(null))
                                         .getIDForObject(((GraniteItemBlock) itemType).obj.fieldGet$block());
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();

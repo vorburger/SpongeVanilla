@@ -71,11 +71,11 @@ public class GraniteVillager extends GraniteEntityAgeable<MCEntityVillager> impl
     @Override
     public Career getCareer() {
         int professionId = Math.max((int) obj.fieldGet$dataWatcher().getWatchedObject(16).fieldGet$watchedObject() % 5, 0);
-        List<Profession> professions = ImmutableList.copyOf(Granite.instance.getGameRegistry().professions.values());
+        List<Profession> professions = ImmutableList.copyOf(Granite.getInstance().getGameRegistry().professions.values());
         Career villagerCareer = null;
         for (Profession profession : professions) {
             if (((GraniteMeta) profession).getType() == professionId) {
-                List<Career> careers = ImmutableList.copyOf(Granite.instance.getGameRegistry().professionCareers.get(profession));
+                List<Career> careers = ImmutableList.copyOf(Granite.getInstance().getGameRegistry().professionCareers.get(profession));
                 for (Career career : careers) {
                     if (((GraniteMeta) career).getType() == obj.fieldGet$career()) {
                         villagerCareer = career;

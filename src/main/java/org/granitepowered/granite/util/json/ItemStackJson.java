@@ -33,11 +33,12 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import org.granitepowered.granite.loader.Classes;
 import org.granitepowered.granite.impl.item.inventory.GraniteItemStack;
-import org.granitepowered.granite.mappings.Mappings;
 import org.granitepowered.granite.mc.MCItemStack;
 import org.granitepowered.granite.mc.MCNBTTagCompound;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 
 public class ItemStackJson implements JsonSerializer<GraniteItemStack>, JsonDeserializer<GraniteItemStack> {
@@ -45,18 +46,20 @@ public class ItemStackJson implements JsonSerializer<GraniteItemStack>, JsonDese
     @Override
     public GraniteItemStack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         String nbtString = json.getAsString();
-        MCNBTTagCompound nbt = (MCNBTTagCompound) Mappings.invokeStatic("JsonToNBT", "parseStringToTag", nbtString);
+        MCNBTTagCompound nbt = (MCNBTTagCompound) Classes.invokeStatic("JsonToNBT", "parseStringToTag", nbtString);
 
-        return wrap((MCItemStack) Mappings.invokeStatic("ItemStack", "loadItemStackFromNBT", nbt));
+        return wrap((MCItemStack) Classes.invokeStatic("ItemStack", "loadItemStackFromNBT", nbt));
     }
 
     @Override
     public JsonElement serialize(GraniteItemStack src, Type typeOfSrc, JsonSerializationContext context) {
         try {
-            Object nbt = Mappings.invoke(src.obj, "writeToNBT", Mappings.getClass("NBTTagCompound").newInstance());
+            Object nbt = Classes.getMethod("ItemStack", "writeToNBT").invoke(src.obj, Classes.getClass("NBTTagCompound").newInstance());
             return new JsonPrimitive(nbt.toString());
         } catch (InstantiationException | IllegalAccessException e) {
             Throwables.propagate(e);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
         return null;
     }

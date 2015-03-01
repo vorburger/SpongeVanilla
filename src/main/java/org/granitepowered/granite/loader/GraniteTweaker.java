@@ -21,56 +21,42 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.granitepowered.granite.impl.world.biome;
+package org.granitepowered.granite.loader;
 
-import org.apache.commons.lang3.NotImplementedException;
-import org.granitepowered.granite.composite.Composite;
-import org.granitepowered.granite.mc.MCBiomeGenBase;
-import org.spongepowered.api.world.biome.BiomeType;
-import org.spongepowered.api.world.gen.Populator;
+import net.minecraft.launchwrapper.ITweaker;
+import net.minecraft.launchwrapper.LaunchClassLoader;
+import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.transformer.MixinTransformer;
 
-public class GraniteBiomeType extends Composite<MCBiomeGenBase> implements BiomeType {
+import java.io.File;
+import java.util.List;
 
-    public GraniteBiomeType(Object obj) {
-        super(obj);
+public class GraniteTweaker implements ITweaker {
+    @Override
+    public void acceptOptions(List<String> list, File file, File file1, String s) {
+
     }
 
     @Override
-    public String getName() {
-<<<<<<< Updated upstream
-        throw new NotImplementedException("");
-=======
-        return obj.fieldGet$biomeName();
->>>>>>> Stashed changes
+    public void injectIntoClassLoader(LaunchClassLoader launchClassLoader) {
+        // This is the second step of the init process
+        // This registers all transformers, and loads the mappings
+        MixinBootstrap.init();
+
+        new GraniteLoader().run();
+
+        launchClassLoader.registerTransformer(MixinTransformer.class.getName());
+        launchClassLoader.registerTransformer(DeobfuscatorTransformer.class.getName());
     }
 
     @Override
-    public double getTemperature() {
-        return obj.fieldGet$temperature();
+    public String getLaunchTarget() {
+        // This points LaunchWrapper to GraniteStartup, so this is executed when it's ready
+        return "org.granitepowered.granite.GraniteStartup";
     }
 
     @Override
-    public double getHumidity() {
-        return obj.fieldGet$rainFall();
-    }
-
-    @Override
-    public float getMinHeight() {
-        return obj.fieldGet$minHeight();
-    }
-
-    @Override
-    public float getMaxHeight() {
-        return obj.fieldGet$maxHeight();
-    }
-
-    @Override
-    public Iterable<Populator> getPopulators() {
-        throw new NotImplementedException("");
-    }
-
-    @Override
-    public void insertPopulator(Populator populator, int i) {
-        throw new NotImplementedException("");
+    public String[] getLaunchArguments() {
+        return new String[0];
     }
 }

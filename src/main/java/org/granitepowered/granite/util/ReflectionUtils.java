@@ -27,12 +27,11 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import javassist.CtClass;
-import javassist.CtMethod;
 import javassist.NotFoundException;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import org.granitepowered.granite.Granite;
-import org.granitepowered.granite.mappings.Mappings;
+import org.granitepowered.granite.loader.Classes;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Array;
@@ -146,7 +145,7 @@ public class ReflectionUtils {
         }
 
         if (name.split("\\.").length == 1 && !name.toLowerCase().equals(name)) {
-            clazz = Mappings.getClass(name);
+            clazz = Classes.getClass(name);
         }
 
         try {
@@ -178,7 +177,7 @@ public class ReflectionUtils {
         }
 
         if (name.split("\\.").length == 1 && !name.toLowerCase().equals(name)) {
-            clazz = Mappings.getCtClass(name);
+            clazz = Classes.getCtClass(name);
         }
 
         try {
@@ -242,29 +241,5 @@ public class ReflectionUtils {
             }
         }
         return input;
-    }
-
-    public static CtMethod getCtMethod(String clazz, String method) {
-        try {
-            return Mappings.getCtMethod(clazz, method);
-        } catch (Mappings.MappingNotFoundException e) {
-            CtClass clazzz = getCtClassByName(clazz);
-
-            if (method.contains("(")) {
-                for (CtMethod methodd : clazzz.getDeclaredMethods()) {
-                    if (method.split("\\(")[0].equals(methodd.getName())) {
-                        if (methodd.getLongName().split("\\(")[1].equals(method.split("\\(")[1])) {
-                            return methodd;
-                        }
-                    }
-                }
-                throw new RuntimeException(clazz + "#" + method + " not found");
-            }
-            try {
-                return clazzz.getDeclaredMethod(method);
-            } catch (NotFoundException e1) {
-                throw Throwables.propagate(e1);
-            }
-        }
     }
 }

@@ -24,8 +24,8 @@
 package org.granitepowered.granite.impl.potion;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.granitepowered.granite.loader.Classes;
 import org.granitepowered.granite.composite.Composite;
-import org.granitepowered.granite.mappings.Mappings;
 import org.granitepowered.granite.mc.MCPotion;
 import org.granitepowered.granite.mc.MCPotionEffect;
 import org.spongepowered.api.entity.living.Living;
@@ -44,8 +44,8 @@ public class GranitePotionEffect extends Composite<MCPotionEffect> implements Po
 
     @Override
     public PotionEffectType getType() {
-        Class potionClass = Mappings.getClass("Potion");
-        Field potionTypes = Mappings.getField(potionClass, "potionTypes");
+        Class potionClass = Classes.getClass("Potion");
+        Field potionTypes = Classes.getField(potionClass, "potionTypes");
         MCPotion[] mcPotions = null;
         try {
             mcPotions = (MCPotion[]) potionTypes.get(potionClass);

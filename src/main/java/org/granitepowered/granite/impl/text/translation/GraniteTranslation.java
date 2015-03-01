@@ -23,7 +23,7 @@
 
 package org.granitepowered.granite.impl.text.translation;
 
-import org.granitepowered.granite.mappings.Mappings;
+import org.granitepowered.granite.loader.Classes;
 import org.spongepowered.api.text.translation.Translation;
 
 public class GraniteTranslation implements Translation {
@@ -41,7 +41,7 @@ public class GraniteTranslation implements Translation {
 
     @Override
     public String get() {
-        return (String) Mappings.invokeStatic("StatCollector", "translateToLocal", id);
+        return (String) Classes.invokeStatic("StatCollector", "translateToLocal", id);
     }
 
     @Override

@@ -28,6 +28,7 @@ import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import org.granitepowered.granite.Granite;
+import org.granitepowered.granite.loader.Classes;
 import org.granitepowered.granite.composite.Composite;
 import org.granitepowered.granite.impl.GraniteGameProfile;
 import org.granitepowered.granite.impl.GraniteServer;
@@ -64,7 +65,6 @@ import org.granitepowered.granite.impl.world.GraniteDimension;
 import org.granitepowered.granite.impl.world.GraniteWorld;
 import org.granitepowered.granite.impl.world.GraniteWorldBorder;
 import org.granitepowered.granite.impl.world.biome.GraniteBiomeType;
-import org.granitepowered.granite.mappings.Mappings;
 import org.granitepowered.granite.mc.MCBlockPos;
 import org.granitepowered.granite.mc.MCIChatComponent;
 import org.granitepowered.granite.mc.MCInterface;
@@ -78,45 +78,45 @@ import java.util.Objects;
 public class MinecraftUtils {
 
     public static ImmutableMap<Class<?>, Class<? extends Composite>> composites = ImmutableMap.<Class<?>, Class<? extends Composite>>builder()
-            .put(Mappings.getClass("BiomeGenBase"), GraniteBiomeType.class)
-            .put(Mappings.getClass("Block"), GraniteBlockType.class)
-            .put(Mappings.getClass("BlockState"), GraniteBlockState.class)
-            .put(Mappings.getClass("Chunk"), GraniteChunk.class)
-            .put(Mappings.getClass("DedicatedServer"), GraniteServer.class)
-            .put(Mappings.getClass("Enchantment"), GraniteServer.class)
-            .put(Mappings.getClass("Entity"), GraniteEntity.class)
-            .put(Mappings.getClass("EntityArmorStand"), GraniteEntityArmorStand.class)
-            .put(Mappings.getClass("EntityArrow"), GraniteEntityArrow.class)
-            .put(Mappings.getClass("EntityBat"), GraniteEntityBat.class)
-            .put(Mappings.getClass("EntityEnderCrystal"), GraniteEntityEnderCrystal.class)
-            .put(Mappings.getClass("EntityDragon"), GraniteEntityDragon.class)
-            .put(Mappings.getClass("EntityDragonPart"), GraniteEntityDragonPart.class)
-            .put(Mappings.getClass("EntityEgg"), GraniteEntityEgg.class)
-            .put(Mappings.getClass("EntityFallingBlock"), GraniteEntityFallingBlock.class)
-            .put(Mappings.getClass("EntityItem"), GraniteEntityItem.class)
-            .put(Mappings.getClass("EntityLargeFireball"), GraniteLargeFireball.class)
-            .put(Mappings.getClass("EntityLightningBolt"), GraniteEntityLightningBolt.class)
-            .put(Mappings.getClass("EntityLivingBase"), GraniteEntityLivingBase.class)
-            .put(Mappings.getClass("EntityLiving"), GraniteEntityLiving.class)
-            .put(Mappings.getClass("EntityPlayerMP"), GranitePlayer.class)
-            .put(Mappings.getClass("EntitySmallFireball"), GraniteSmallFireball.class)
-            .put(Mappings.getClass("EntityTNTPrimed"), GraniteEntityPrimedTNT.class)
-            .put(Mappings.getClass("EntityXPOrb"), GraniteEntityExperienceOrb.class)
-            .put(Mappings.getClass("EnumArt"), GraniteArt.class)
-            .put(Mappings.getClass("EnumBannerPattern"), GraniteBannerPatternShape.class)
-            .put(Mappings.getClass("EnumDyeColor"), GraniteDyeColor.class)
-            .put(Mappings.getClass("GameProfile"), GraniteGameProfile.class)
-            .put(Mappings.getClass("Item"), GraniteItemType.class)
-            .put(Mappings.getClass("ItemBlock"), GraniteItemBlock.class)
-            .put(Mappings.getClass("ItemStack"), GraniteItemStack.class)
-            .put(Mappings.getClass("MerchantRecipe"), GraniteTradeOffer.class)
-            .put(Mappings.getClass("NetworkManager"), GraniteStatusClient.class)
-            .put(Mappings.getClass("Potion"), GranitePotionEffectType.class)
-            .put(Mappings.getClass("PotionEffect"), GranitePotionEffect.class)
-            .put(Mappings.getClass("PropertyHelper"), GraniteBlockProperty.class)
-            .put(Mappings.getClass("WorldBorder"), GraniteWorldBorder.class)
-            .put(Mappings.getClass("WorldServer"), GraniteWorld.class)
-            .put(Mappings.getClass("WorldProvider"), GraniteDimension.class)
+            .put(Classes.getClass("BiomeGenBase"), GraniteBiomeType.class)
+            .put(Classes.getClass("Block"), GraniteBlockType.class)
+            .put(Classes.getClass("BlockState"), GraniteBlockState.class)
+            .put(Classes.getClass("Chunk"), GraniteChunk.class)
+            .put(Classes.getClass("DedicatedServer"), GraniteServer.class)
+            .put(Classes.getClass("Enchantment"), GraniteServer.class)
+            .put(Classes.getClass("Entity"), GraniteEntity.class)
+            .put(Classes.getClass("EntityArmorStand"), GraniteEntityArmorStand.class)
+            .put(Classes.getClass("EntityArrow"), GraniteEntityArrow.class)
+            .put(Classes.getClass("EntityBat"), GraniteEntityBat.class)
+            .put(Classes.getClass("EntityEnderCrystal"), GraniteEntityEnderCrystal.class)
+            .put(Classes.getClass("EntityDragon"), GraniteEntityDragon.class)
+            .put(Classes.getClass("EntityDragonPart"), GraniteEntityDragonPart.class)
+            .put(Classes.getClass("EntityEgg"), GraniteEntityEgg.class)
+            .put(Classes.getClass("EntityFallingBlock"), GraniteEntityFallingBlock.class)
+            .put(Classes.getClass("EntityItem"), GraniteEntityItem.class)
+            .put(Classes.getClass("EntityLargeFireball"), GraniteLargeFireball.class)
+            .put(Classes.getClass("EntityLightningBolt"), GraniteEntityLightningBolt.class)
+            .put(Classes.getClass("EntityLivingBase"), GraniteEntityLivingBase.class)
+            .put(Classes.getClass("EntityLiving"), GraniteEntityLiving.class)
+            .put(Classes.getClass("EntityPlayerMP"), GranitePlayer.class)
+            .put(Classes.getClass("EntitySmallFireball"), GraniteSmallFireball.class)
+            .put(Classes.getClass("EntityTNTPrimed"), GraniteEntityPrimedTNT.class)
+            .put(Classes.getClass("EntityXPOrb"), GraniteEntityExperienceOrb.class)
+            .put(Classes.getClass("EnumArt"), GraniteArt.class)
+            .put(Classes.getClass("EnumBannerPattern"), GraniteBannerPatternShape.class)
+            .put(Classes.getClass("EnumDyeColor"), GraniteDyeColor.class)
+            .put(Classes.getClass("GameProfile"), GraniteGameProfile.class)
+            .put(Classes.getClass("Item"), GraniteItemType.class)
+            .put(Classes.getClass("ItemBlock"), GraniteItemBlock.class)
+            .put(Classes.getClass("ItemStack"), GraniteItemStack.class)
+            .put(Classes.getClass("MerchantRecipe"), GraniteTradeOffer.class)
+            .put(Classes.getClass("NetworkManager"), GraniteStatusClient.class)
+            .put(Classes.getClass("Potion"), GranitePotionEffectType.class)
+            .put(Classes.getClass("PotionEffect"), GranitePotionEffect.class)
+            .put(Classes.getClass("PropertyHelper"), GraniteBlockProperty.class)
+            .put(Classes.getClass("WorldBorder"), GraniteWorldBorder.class)
+            .put(Classes.getClass("WorldServer"), GraniteWorld.class)
+            .put(Classes.getClass("WorldProvider"), GraniteDimension.class)
             .build();
 
     @Nonnull
@@ -150,7 +150,11 @@ public class MinecraftUtils {
 
     public static MCIChatComponent graniteToMinecraftChatComponent(Message message) {
         String json = Granite.getInstance().getGson().toJson(message, GraniteMessage.class);
+<<<<<<< Updated upstream
         return (MCIChatComponent) Mappings.invokeStatic("IChatComponent$Serializer", "jsonToComponent", json);
+=======
+        return (MCChatComponent) Classes.invokeStatic("IChatComponent$Serializer", "jsonToComponent", json);
+>>>>>>> Stashed changes
     }
 
     public static MCBlockPos graniteToMinecraftBlockPos(Vector3i vector) {
@@ -161,8 +165,13 @@ public class MinecraftUtils {
         return (Enum) clazz.getEnumConstants()[number];
     }
 
+<<<<<<< Updated upstream
     public static Message minecraftToGraniteMessage(MCIChatComponent deathComponent) {
         String json = (String) Mappings.invokeStatic("IChatComponent$Serializer", "componentToJson", deathComponent);
+=======
+    public static Message minecraftToGraniteMessage(MCChatComponent deathComponent) {
+        String json = (String) Classes.invokeStatic("IChatComponent$Serializer", "componentToJson", deathComponent);
+>>>>>>> Stashed changes
         return Granite.getInstance().getGson().fromJson(json, GraniteMessage.class);
     }
 
