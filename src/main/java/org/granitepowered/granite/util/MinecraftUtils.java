@@ -150,11 +150,7 @@ public class MinecraftUtils {
 
     public static MCIChatComponent graniteToMinecraftChatComponent(Message message) {
         String json = Granite.getInstance().getGson().toJson(message, GraniteMessage.class);
-<<<<<<< Updated upstream
-        return (MCIChatComponent) Mappings.invokeStatic("IChatComponent$Serializer", "jsonToComponent", json);
-=======
-        return (MCChatComponent) Classes.invokeStatic("IChatComponent$Serializer", "jsonToComponent", json);
->>>>>>> Stashed changes
+        return (MCIChatComponent) Classes.invokeStatic("IChatComponent$Serializer", "jsonToComponent", json);
     }
 
     public static MCBlockPos graniteToMinecraftBlockPos(Vector3i vector) {
@@ -165,13 +161,8 @@ public class MinecraftUtils {
         return (Enum) clazz.getEnumConstants()[number];
     }
 
-<<<<<<< Updated upstream
     public static Message minecraftToGraniteMessage(MCIChatComponent deathComponent) {
-        String json = (String) Mappings.invokeStatic("IChatComponent$Serializer", "componentToJson", deathComponent);
-=======
-    public static Message minecraftToGraniteMessage(MCChatComponent deathComponent) {
         String json = (String) Classes.invokeStatic("IChatComponent$Serializer", "componentToJson", deathComponent);
->>>>>>> Stashed changes
         return Granite.getInstance().getGson().fromJson(json, GraniteMessage.class);
     }
 

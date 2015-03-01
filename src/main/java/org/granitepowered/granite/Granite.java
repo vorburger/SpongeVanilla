@@ -35,7 +35,6 @@ import org.granitepowered.granite.impl.service.event.GraniteEventManager;
 import org.granitepowered.granite.impl.service.scheduler.GraniteScheduler;
 import org.granitepowered.granite.impl.text.action.GraniteTextAction;
 import org.granitepowered.granite.impl.text.message.GraniteMessage;
-import org.granitepowered.granite.loader.Mappings;
 import org.granitepowered.granite.util.json.EntityJson;
 import org.granitepowered.granite.util.json.ItemStackJson;
 import org.granitepowered.granite.util.json.MessageJson;
@@ -49,13 +48,12 @@ import org.spongepowered.api.service.command.CommandService;
 import org.spongepowered.api.service.command.SimpleCommandService;
 import org.spongepowered.api.service.event.EventManager;
 
-import java.io.File;
-
 import javax.inject.Inject;
+import java.io.File;
 
 public class Granite {
 
-    static Granite instance;
+    public static Granite instance;
     final GranitePluginManager pluginManager;
     final GraniteGameRegistry gameRegistry;
     final GraniteEventManager eventManager;
@@ -66,10 +64,10 @@ public class Granite {
     GraniteServer server;
     String version;
     String apiVersion;
-    MinecraftVersion minecraftVersion;
-    ServerConfig serverConfig;
+    public MinecraftVersion minecraftVersion;
+    public ServerConfig serverConfig;
     ClassPool classPool;
-    Logger logger;
+    public Logger logger;
     Gson gson;
     File classesDir;
 

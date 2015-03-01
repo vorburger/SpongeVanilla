@@ -104,15 +104,12 @@ public class GraniteStartup {
             Granite.getInstance().version = serverVersion;
             Granite.getInstance().apiVersion = apiVersion;
 
-            Granite.getInstance().serverConfig = new ServerConfig();
             Granite.getInstance().classPool = ClassPool.getDefault();
 
             Granite.getInstance().eventManager.post(new GraniteConstructionEvent());
 
             Granite.getInstance().classesDir = new File("classes/");
             Granite.getInstance().classesDir.mkdirs();
-
-            Granite.getInstance().minecraftVersion = GraniteLoader.minecraftVersion;
 
             Granite.getInstance().createGson();
 

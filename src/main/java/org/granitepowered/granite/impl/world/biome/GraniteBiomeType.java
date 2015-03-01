@@ -37,11 +37,7 @@ public class GraniteBiomeType extends Composite<MCBiomeGenBase> implements Biome
 
     @Override
     public String getName() {
-<<<<<<< Updated upstream
-        throw new NotImplementedException("");
-=======
         return obj.fieldGet$biomeName();
->>>>>>> Stashed changes
     }
 
     @Override

@@ -25,8 +25,13 @@ package org.granitepowered.granite.loader;
 
 import com.github.kevinsawicki.http.HttpRequest;
 import com.google.common.base.Throwables;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.granitepowered.granite.Granite;
-import org.spongepowered.api.MinecraftVersion;
+import org.granitepowered.granite.ServerConfig;
+import org.granitepowered.granite.impl.GraniteMinecraftVersion;
+import org.granitepowered.granite.impl.guice.GraniteGuiceModule;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Objects;
@@ -36,10 +41,10 @@ public class GraniteLoader {
 
     File minecraftJar;
 
-    public static MinecraftVersion minecraftVersion;
-
     public void run() {
         try {
+            createGranite();
+
             downloadMinecraft();
 
             addMinecraftToClassPool();
@@ -52,6 +57,14 @@ public class GraniteLoader {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    private void createGranite() {
+        Injector injector = Guice.createInjector(new GraniteGuiceModule());
+        Granite.instance = injector.getInstance(Granite.class);
+        Granite.getInstance().logger = LoggerFactory.getLogger("Granite");
+
+        Granite.getInstance().serverConfig = new ServerConfig();
     }
 
     private void addMinecraftToClassPool() {
@@ -106,9 +119,6 @@ public class GraniteLoader {
         String version = Granite.getInstance().getMinecraftVersion().getName().replace("Minecraft ", "");
         File jarFile = minecraftJar;
         File outputJarFile = new File("minecraft_server." + version + ".output.jar");
-
-        MinecraftLoader loader = new MinecraftLoader();
-        loader.load(jarFile, outputJarFile, new Mappings());
     }
 
     private void downloadMinecraft() {
@@ -127,6 +137,7 @@ public class GraniteLoader {
         }
 
         String minecraftVersion = minecraftJar.getName().replace("minecraft_server.", "Minecraft ").replace(".jar", "");
+        Granite.getInstance().minecraftVersion = new GraniteMinecraftVersion(minecraftVersion, 47);
     }
 }
 

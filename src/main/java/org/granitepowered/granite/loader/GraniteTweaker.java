@@ -45,8 +45,8 @@ public class GraniteTweaker implements ITweaker {
 
         new GraniteLoader().run();
 
-        launchClassLoader.registerTransformer(MixinTransformer.class.getName());
-        launchClassLoader.registerTransformer(DeobfuscatorTransformer.class.getName());
+        launchClassLoader.registerTransformer("org.granitepowered.granite.loader.DeobfuscatorTransformer");
+        launchClassLoader.registerTransformer("org.spongepowered.asm.mixin.transformer.MixinTransformer");
     }
 
     @Override

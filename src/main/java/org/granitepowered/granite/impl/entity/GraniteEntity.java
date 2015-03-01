@@ -113,22 +113,14 @@ public class GraniteEntity<T extends MCEntity> extends Composite<T> implements E
 
     @Override
     public Vector3d getVelocity() {
-<<<<<<< Updated upstream
         return new Vector3d(obj.fieldGet$motionX(), obj.fieldGet$motionY(), obj.fieldGet$motionZ());
-=======
-        throw new NotImplementedException("");
->>>>>>> Stashed changes
     }
 
     @Override
     public void setVelocity(Vector3d vector3d) {
-<<<<<<< Updated upstream
         obj.fieldSet$motionX(vector3d.getX());
         obj.fieldSet$motionY(vector3d.getY());
         obj.fieldSet$motionZ(vector3d.getZ());
-=======
-        throw new NotImplementedException("");
->>>>>>> Stashed changes
     }
 
     @Override
