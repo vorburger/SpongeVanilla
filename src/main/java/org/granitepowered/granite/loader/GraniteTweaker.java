@@ -26,12 +26,15 @@ package org.granitepowered.granite.loader;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.transformer.MixinTransformer;
 
 import java.io.File;
 import java.util.List;
 
 public class GraniteTweaker implements ITweaker {
+    public static LaunchClassLoader loader;
+
     @Override
     public void acceptOptions(List<String> list, File file, File file1, String s) {
 
@@ -39,11 +42,16 @@ public class GraniteTweaker implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader launchClassLoader) {
+        loader = launchClassLoader;
+
         // This is the second step of the init process
         // This registers all transformers, and loads the mappings
-        MixinBootstrap.init();
 
-        new GraniteLoader().run();
+        // This package (the one this tweaker is in) is automatically excluded from the class loader
+
+        // Register stuff
+        MixinBootstrap.init();
+        MixinEnvironment.getCurrentEnvironment().addConfiguration("mixins.granite.json");
 
         launchClassLoader.registerTransformer("org.granitepowered.granite.loader.DeobfuscatorTransformer");
         launchClassLoader.registerTransformer("org.spongepowered.asm.mixin.transformer.MixinTransformer");

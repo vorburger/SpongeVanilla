@@ -1,4 +1,4 @@
-/*
+package mc;/*
  * License (MIT)
  *
  * Copyright (c) 2014-2015 Granite Team
@@ -21,25 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.granitepowered.granite.loader;
-
-import javassist.ClassPool;
-import javassist.NotFoundException;
-import org.granitepowered.granite.Classes;
-
-import java.io.File;
-
-public class MinecraftLoader {
-    public static void createPool(File originalJarFile) {
-        // Create a class pool and add the original jar file
-        ClassPool pool = new ClassPool(true);
-        try {
-            pool.appendClassPath(originalJarFile.getPath());
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
-
-        // Add the pool to Classes, so other classes can use it
-        Classes.pool = pool;
+public class Bootstrap {
+    public static void register() {
     }
 }

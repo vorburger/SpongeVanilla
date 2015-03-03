@@ -30,7 +30,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.granitepowered.granite.impl.entity.projectile.GraniteProjectile;
 import org.granitepowered.granite.mc.MCEntityFireball;
 import org.granitepowered.granite.mc.MCEntityLivingBase;
-import org.spongepowered.api.entity.projectile.fireball.Fireball;
+import org.spongepowered.api.entity.projectile.explosive.fireball.Fireball;
 import org.spongepowered.api.entity.projectile.source.ProjectileSource;
 
 public abstract class GraniteFireball<T extends MCEntityFireball> extends GraniteProjectile<T> implements Fireball {

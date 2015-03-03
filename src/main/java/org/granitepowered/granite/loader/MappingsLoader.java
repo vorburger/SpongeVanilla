@@ -52,7 +52,7 @@ public class MappingsLoader {
             for (Map.Entry<String, JsonElement> classEntry : classes.entrySet()) {
                 String deobfClassName = classEntry.getKey();
 
-                JsonObject methods = classes.getAsJsonObject("methods");
+                JsonObject methods = classEntry.getValue().getAsJsonObject().getAsJsonObject("methods");
                 if (methods != null) {
                     for (Map.Entry<String, JsonElement> methodEntry : methods.entrySet()) {
                         String deobfMethodName = methodEntry.getValue().getAsString();
@@ -62,13 +62,13 @@ public class MappingsLoader {
                     }
                 }
 
-                JsonObject fields = classes.getAsJsonObject("fields");
+                JsonObject fields = classEntry.getValue().getAsJsonObject().getAsJsonObject("fields");
                 if (fields != null) {
                     for (Map.Entry<String, JsonElement> fieldEntry : fields.entrySet()) {
                         String deobfFieldName = fieldEntry.getValue().getAsString();
                         String obfFieldSig = fieldEntry.getKey();
 
-                        mappings.addFieldMapping(deobfClassName, deobfFieldName, obfFieldSig);
+                        mappings.addFieldMapping(deobfClassName, obfFieldSig, deobfFieldName);
                     }
                 }
             }

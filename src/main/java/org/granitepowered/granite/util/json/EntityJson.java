@@ -35,7 +35,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import org.granitepowered.granite.Granite;
-import org.granitepowered.granite.loader.Classes;
+import org.granitepowered.granite.Classes;
 import org.granitepowered.granite.impl.entity.GraniteEntity;
 import org.granitepowered.granite.mc.MCEntity;
 import org.granitepowered.granite.mc.MCWorld;

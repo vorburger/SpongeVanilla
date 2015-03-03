@@ -21,25 +21,19 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.granitepowered.granite.loader;
+package org.granitepowered.granite.mixin;
 
-import javassist.ClassPool;
-import javassist.NotFoundException;
-import org.granitepowered.granite.Classes;
+import mc.EnumArt;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
-import java.io.File;
+@Mixin(EnumArt.class)
+public class MixinEnumArt {
+    @Shadow
+    private String name;
 
-public class MinecraftLoader {
-    public static void createPool(File originalJarFile) {
-        // Create a class pool and add the original jar file
-        ClassPool pool = new ClassPool(true);
-        try {
-            pool.appendClassPath(originalJarFile.getPath());
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
-
-        // Add the pool to Classes, so other classes can use it
-        Classes.pool = pool;
+    public MixinEnumArt() {
+        name = "hi";
     }
 }

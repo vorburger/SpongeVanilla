@@ -31,7 +31,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.apache.commons.lang3.NotImplementedException;
 import org.granitepowered.granite.Granite;
-import org.granitepowered.granite.loader.Classes;
+import org.granitepowered.granite.Classes;
 import org.granitepowered.granite.composite.Composite;
 import org.granitepowered.granite.impl.world.GraniteWorld;
 import org.granitepowered.granite.mc.MCEntityPlayerMP;

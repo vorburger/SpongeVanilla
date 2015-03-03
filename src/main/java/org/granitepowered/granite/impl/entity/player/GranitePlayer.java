@@ -32,7 +32,7 @@ import com.flowpowered.math.vector.Vector3f;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.NotImplementedException;
-import org.granitepowered.granite.loader.Classes;
+import org.granitepowered.granite.Classes;
 import org.granitepowered.granite.impl.effect.particle.GraniteParticleEffect;
 import org.granitepowered.granite.impl.effect.particle.GraniteParticleType;
 import org.granitepowered.granite.impl.item.GraniteItemBlock;
@@ -54,11 +54,12 @@ import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.entity.player.gamemode.GameMode;
+import org.spongepowered.api.entity.player.tab.TabList;
 import org.spongepowered.api.entity.projectile.Arrow;
 import org.spongepowered.api.entity.projectile.Egg;
 import org.spongepowered.api.entity.projectile.Projectile;
-import org.spongepowered.api.entity.projectile.fireball.LargeFireball;
-import org.spongepowered.api.entity.projectile.fireball.SmallFireball;
+import org.spongepowered.api.entity.projectile.explosive.fireball.LargeFireball;
+import org.spongepowered.api.entity.projectile.explosive.fireball.SmallFireball;
 import org.spongepowered.api.item.ItemBlock;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.Carrier;
@@ -188,6 +189,11 @@ public class GranitePlayer extends GraniteEntityPlayer<MCEntityPlayerMP> impleme
 
     @Override
     public PlayerConnection getConnection() {
+        throw new NotImplementedException("");
+    }
+
+    @Override
+    public TabList getTabList() {
         throw new NotImplementedException("");
     }
 
@@ -553,7 +559,7 @@ public class GranitePlayer extends GraniteEntityPlayer<MCEntityPlayerMP> impleme
 
     @Override
     public <T extends Projectile> T launchProjectile(Class<T> projectileClass) {
-        MCEntity entity = null;
+        MCEntity entity;
         if (projectileClass.isAssignableFrom(Arrow.class)) {
             entity = Instantiator.get().newEntityArrow(obj.fieldGet$worldObj(), obj, 2);
         } else if (projectileClass.isAssignableFrom(Egg.class)) {

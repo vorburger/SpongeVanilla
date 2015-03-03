@@ -23,17 +23,19 @@
 
 package org.granitepowered.granite;
 
+import com.github.kevinsawicki.http.HttpRequest;
 import com.google.common.base.Throwables;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import javassist.ClassPool;
+import mc.Bootstrap;
+import org.granitepowered.granite.impl.GraniteMinecraftVersion;
 import org.granitepowered.granite.impl.GraniteServer;
 import org.granitepowered.granite.impl.event.state.*;
 import org.granitepowered.granite.impl.guice.GraniteGuiceModule;
 import org.granitepowered.granite.impl.text.chat.GraniteChatType;
 import org.granitepowered.granite.impl.text.format.GraniteTextColor;
-import org.granitepowered.granite.loader.Classes;
-import org.granitepowered.granite.loader.GraniteLoader;
+import org.granitepowered.granite.loader.*;
 import org.granitepowered.granite.util.ReflectionUtils;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Game;
@@ -57,6 +59,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -66,6 +69,10 @@ public class GraniteStartup {
     String serverVersion;
     String apiVersion;
     String buildNumber = "UNKNOWN";
+
+    Mappings mappings;
+
+    File minecraftJar;
 
     public static void main(String[] args) {
         new GraniteStartup().run();
@@ -108,10 +115,17 @@ public class GraniteStartup {
 
             Granite.getInstance().eventManager.post(new GraniteConstructionEvent());
 
-            Granite.getInstance().classesDir = new File("classes/");
-            Granite.getInstance().classesDir.mkdirs();
+            Granite.getInstance().serverConfig = new ServerConfig();
 
             Granite.getInstance().createGson();
+
+            loadMinecraft();
+
+            loadMappings();
+
+            DeobfuscatorTransformer.mappings = mappings;
+            DeobfuscatorTransformer.minecraftJar = minecraftJar;
+            DeobfuscatorTransformer.init();
 
             bootstrap();
 
@@ -212,6 +226,74 @@ public class GraniteStartup {
     private void bootstrap() {
         Granite.getInstance().getLogger().info("Bootstrapping Minecraft");
 
-        Classes.invokeStatic("Bootstrap", "register");
+        Bootstrap.register();
+    }
+
+    private void downloadMappings(File mappingsFile, String url, HttpRequest req) {
+        Granite.getInstance().getLogger().warn("Downloading from " + url);
+        if (req.code() == 404) {
+            //throw new RuntimeException("GitHub 404 error whilst trying to download");
+        } else if (req.code() == 200) {
+            req.receive(mappingsFile);
+            Granite.getInstance().getServerConfig().set("latest-mappings-etag", req.eTag());
+            Granite.getInstance().getServerConfig().save();
+        }
+    }
+
+    private void loadMappings() {
+        File mappingsFile = new File(Granite.getInstance().getServerConfig().getMappingsFile().getAbsolutePath());
+        String url = "https://raw.githubusercontent.com/GraniteTeam/GraniteMappings/sponge/1.8.3.json";
+        try {
+            HttpRequest req = HttpRequest.get(url);
+
+            if (Granite.getInstance().getServerConfig().getAutomaticMappingsUpdating()) {
+                Granite.getInstance().getLogger().info("Querying Granite for updates");
+                if (!mappingsFile.exists()) {
+                    Granite.getInstance().getLogger().warn("Could not find mappings.json");
+                    downloadMappings(mappingsFile, url, req);
+                } else if (!Objects.equals(req.eTag(), Granite.getInstance().getServerConfig().getLatestMappingsEtag())) {
+                    Granite.getInstance().getLogger().info("Update found");
+                    downloadMappings(mappingsFile, url, req);
+                }
+            }
+        } catch (HttpRequest.HttpRequestException e) {
+            Granite.getInstance().getLogger().warn("Could not reach Granite mappings, falling back to local");
+
+            if (!mappingsFile.exists()) {
+                Granite.getInstance().getLogger()
+                        .warn("Could not find local mappings file. Obtain it (somehow) and place it in the server's root directory called \"mappings.json\"");
+                Throwables.propagate(e);
+            } else {
+                Granite.error(e);
+            }
+        }
+
+        mappings = MappingsLoader.load(mappingsFile);
+    }
+
+    private void loadMinecraft() {
+        String version = "1.8.3";
+        minecraftJar = new File("minecraft_server." + version + ".jar");
+
+        if (!minecraftJar.exists()) {
+            Granite.getInstance().getLogger().warn("Could not find Minecraft .jar, downloading");
+            HttpRequest req = HttpRequest.get("https://s3.amazonaws.com/Minecraft.Download/versions/" + version + "/minecraft_server." + version + ".jar");
+            if (req.code() == 404) {
+                throw new RuntimeException("404 error whilst trying to download Minecraft");
+            } else if (req.code() == 200) {
+                req.receive(minecraftJar);
+                Granite.getInstance().getLogger().info("Minecraft Downloaded");
+            }
+        }
+
+        String minecraftVersion = minecraftJar.getName().replace("minecraft_server.", "Minecraft ").replace(".jar", "");
+        Granite.getInstance().minecraftVersion = new GraniteMinecraftVersion(minecraftVersion, 47);
+
+        MinecraftLoader.createPool(minecraftJar);
+        try {
+            GraniteTweaker.loader.addURL(minecraftJar.toURI().toURL());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
 }

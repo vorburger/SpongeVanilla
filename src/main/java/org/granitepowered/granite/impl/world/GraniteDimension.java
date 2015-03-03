@@ -23,7 +23,7 @@
 
 package org.granitepowered.granite.impl.world;
 
-import org.granitepowered.granite.loader.Classes;
+import org.granitepowered.granite.Classes;
 import org.granitepowered.granite.composite.Composite;
 import org.granitepowered.granite.mc.MCWorldProvider;
 import org.spongepowered.api.world.Dimension;

@@ -28,7 +28,7 @@ import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import org.granitepowered.granite.Granite;
-import org.granitepowered.granite.loader.Classes;
+import org.granitepowered.granite.Classes;
 import org.granitepowered.granite.composite.Composite;
 import org.granitepowered.granite.impl.GraniteGameProfile;
 import org.granitepowered.granite.impl.GraniteServer;

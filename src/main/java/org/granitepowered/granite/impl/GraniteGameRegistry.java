@@ -30,10 +30,10 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import mc.EnumArt;
 import org.apache.commons.lang3.NotImplementedException;
 import org.granitepowered.granite.Granite;
-import org.granitepowered.granite.Main;
-import org.granitepowered.granite.loader.Classes;
+import org.granitepowered.granite.Classes;
 import org.granitepowered.granite.impl.effect.particle.GraniteParticleEffectBuilder;
 import org.granitepowered.granite.impl.effect.particle.GraniteParticleType;
 import org.granitepowered.granite.impl.entity.hanging.art.GraniteArt;
@@ -123,6 +123,7 @@ import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.DimensionTypes;
 import org.spongepowered.api.world.biome.BiomeType;
 import org.spongepowered.api.world.biome.BiomeTypes;
+import org.spongepowered.api.world.difficulty.Difficulty;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -204,13 +205,13 @@ public class GraniteGameRegistry implements GameRegistry {
     private void registerArts() {
         Granite.getInstance().getLogger().info("Registering Arts");
 
-        List<MCEnumArt> mcEnumArts = Arrays.asList((MCEnumArt[]) Classes.getClass("EnumArt").getEnumConstants());
+        List<EnumArt> mcEnumArts = Arrays.asList(EnumArt.values());
         for (Field field : Arts.class.getDeclaredFields()) {
             ReflectionUtils.forceAccessible(field);
 
             String name = field.getName().toLowerCase().replace("_", "");
-            for (MCEnumArt mcEnumArt : mcEnumArts) {
-                if (name.equals(mcEnumArt.fieldGet$name().toLowerCase())) {
+            for (EnumArt mcEnumArt : mcEnumArts) {
+                if (name.equals(mcEnumArt.name.toLowerCase())) {
                     try {
                         Art art = new GraniteArt(mcEnumArt);
                         field.set(null, art);
@@ -1111,6 +1112,16 @@ public class GraniteGameRegistry implements GameRegistry {
 
     @Override
     public RecipeRegistry getRecipeRegistry() {
+        throw new NotImplementedException("");
+    }
+
+    @Override
+    public Collection<Difficulty> getDifficulties() {
+        throw new NotImplementedException("");
+    }
+
+    @Override
+    public Optional<Difficulty> getDifficulty(String s) {
         throw new NotImplementedException("");
     }
 }

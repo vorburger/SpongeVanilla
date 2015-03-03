@@ -33,7 +33,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.NotImplementedException;
-import org.granitepowered.granite.loader.Classes;
+import org.granitepowered.granite.Classes;
 import org.granitepowered.granite.composite.Composite;
 import org.granitepowered.granite.impl.block.GraniteBlockLoc;
 import org.granitepowered.granite.impl.entity.GraniteEntity;
@@ -61,6 +61,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldBorder;
 import org.spongepowered.api.world.biome.BiomeType;
+import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.gen.WorldGenerator;
 import org.spongepowered.api.world.storage.WorldStorage;
 import org.spongepowered.api.world.weather.Weather;
@@ -74,6 +75,16 @@ public class GraniteWorld extends Composite<MCWorld> implements World {
 
     public GraniteWorld(MCWorld obj) {
         super(obj);
+    }
+
+    @Override
+    public Difficulty getDifficulty() {
+        throw new NotImplementedException("");
+    }
+
+    @Override
+    public void setDifficulty(Difficulty difficulty) {
+        throw new NotImplementedException("");
     }
 
     @Override

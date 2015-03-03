@@ -23,7 +23,7 @@
 
 package org.granitepowered.granite.impl.text.translation;
 
-import org.granitepowered.granite.loader.Classes;
+import org.granitepowered.granite.Classes;
 import org.spongepowered.api.text.translation.Translation;
 
 public class GraniteTranslation implements Translation {

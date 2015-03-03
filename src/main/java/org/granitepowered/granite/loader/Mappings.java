@@ -23,20 +23,24 @@
 
 package org.granitepowered.granite.loader;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import javassist.*;
 import javassist.bytecode.Descriptor;
 import org.apache.commons.lang3.StringUtils;
+import org.granitepowered.granite.Classes;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Mappings {
-    private Map<String, CtClass> classes;
-    private Map<String, Map<String, CtMethod>> methods;
-    private Map<String, Map<String, CtField>> fields;
+    // All Deobf -> Obf
+    private BiMap<String, String> classes;
+    private Map<String, BiMap<String, String>> methods;
+    private Map<String, BiMap<String, String>> fields;
 
     public Mappings() {
-        classes = new HashMap<>();
+        classes = HashBiMap.create();
         methods = new HashMap<>();
         fields = new HashMap<>();
     }
@@ -46,18 +50,12 @@ public class Mappings {
 
     public void addClassMapping(String obf, String deobf) {
         // Add a class mapping
-        try {
-            classes.put(deobf, Classes.pool.get(obf));
-            methods.put(deobf, new HashMap<String, CtMethod>());
-            fields.put(deobf, new HashMap<String, CtField>());
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
+        classes.put(deobf, obf);
+        methods.put(deobf, HashBiMap.<String, String>create());
+        fields.put(deobf, HashBiMap.<String, String>create());
     }
 
     public void addMethodMapping(String deobfClass, String obfMethod, String deobfMethod) {
-        CtClass clazz = classes.get(deobfClass);
-
         // Break the obfuscated method into bits
         // (obfuscated method: a(int,boolean,java.lang.Object):void)
         String obfName = obfMethod.split("\\(")[0];
@@ -74,72 +72,45 @@ public class Mappings {
             String paramName = paramNames[i];
 
             if (classes.containsKey(paramName)) {
-                paramNames[i] = classes.get(paramName).getName();
+                paramNames[i] = classes.get(paramName);
             }
         }
 
         // Re-obfuscate the return type
         if (classes.containsKey(obfReturn)) {
-            obfReturn = classes.get(obfReturn).getName();
+            obfReturn = classes.get(obfReturn);
         }
 
         obfSig = StringUtils.join(paramNames, ",");
 
-        // Find a method that matches exactly
-        for (CtMethod method : clazz.getDeclaredMethods()) {
-            if (method.getName().equals(obfName)) {
-                String prettyDescriptor = Descriptor.toString(method.getSignature());
+        String fullObfSig = obfName + "(" + obfSig + "):" + obfReturn;
 
-                if (prettyDescriptor.equals("(" + obfSig + ")")) {
-                    try {
-                        if (method.getReturnType().getName().equals(obfReturn)) {
-                            // Match!
-
-                            methods.get(deobfClass).put(deobfMethod, method);
-                        }
-                    } catch (NotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
+        methods.get(deobfClass).put(deobfMethod, fullObfSig);
     }
 
     public void addFieldMapping(String deobfClass, String obfField, String deobfField) {
-        CtClass clazz = classes.get(deobfClass);
-
         String obfName = obfField.split(":")[0];
         String obfType = obfField.split(":")[1];
 
         // Re-obfuscate the type
         if (classes.containsKey(obfType)) {
-            obfType = classes.get(obfType).getName();
+            obfType = classes.get(obfType);
         }
 
-        for (CtField field : clazz.getDeclaredFields()) {
-            if (field.getName().equals(obfName)) {
-                try {
-                    if (field.getType().getName().equals(obfType)) {
-                        // Match!
+        String fullObf = obfName + ":" + obfType;
 
-                        fields.get(deobfClass).put(deobfField, field);
-                    }
-                } catch (NotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        fields.get(deobfClass).put(deobfField, fullObf);
     }
 
-    public Map<String, CtClass> getClasses() {
+    public BiMap<String, String> getClasses() {
         return classes;
     }
 
-    public Map<String, Map<String, CtMethod>> getMethods() {
+    public Map<String, BiMap<String, String>> getMethods() {
         return methods;
     }
 
-    public Map<String, Map<String, CtField>> getFields() {
+    public Map<String, BiMap<String, String>> getFields() {
         return fields;
     }
 }

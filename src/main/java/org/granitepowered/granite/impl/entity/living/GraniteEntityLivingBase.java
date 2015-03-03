@@ -31,7 +31,7 @@ import com.flowpowered.math.vector.Vector3f;
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.NotImplementedException;
 import org.granitepowered.granite.Granite;
-import org.granitepowered.granite.loader.Classes;
+import org.granitepowered.granite.Classes;
 import org.granitepowered.granite.impl.entity.GraniteEntity;
 import org.granitepowered.granite.impl.potion.GranitePotionEffect;
 import org.granitepowered.granite.mc.MCDamageSource;

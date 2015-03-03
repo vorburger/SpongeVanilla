@@ -31,7 +31,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.NotImplementedException;
-import org.granitepowered.granite.loader.Classes;
+import org.granitepowered.granite.Classes;
 import org.granitepowered.granite.impl.block.data.GraniteSign;
 import org.granitepowered.granite.impl.item.inventory.GraniteItemStack;
 import org.granitepowered.granite.impl.world.GraniteWorld;

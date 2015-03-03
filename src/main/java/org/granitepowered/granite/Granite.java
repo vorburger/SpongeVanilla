@@ -64,12 +64,11 @@ public class Granite {
     GraniteServer server;
     String version;
     String apiVersion;
-    public MinecraftVersion minecraftVersion;
-    public ServerConfig serverConfig;
+    MinecraftVersion minecraftVersion;
+    ServerConfig serverConfig;
     ClassPool classPool;
-    public Logger logger;
+    Logger logger;
     Gson gson;
-    File classesDir;
 
     @Inject
     public Granite(GranitePluginManager pluginManager,
@@ -144,10 +143,6 @@ public class Granite {
 
     public ClassPool getClassPool() {
         return classPool;
-    }
-
-    public File getClassesDir() {
-        return classesDir;
     }
 
     public EventManager getEventManager() {

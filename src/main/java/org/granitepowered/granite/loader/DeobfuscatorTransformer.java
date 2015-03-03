@@ -23,30 +23,35 @@
 
 package org.granitepowered.granite.loader;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import javassist.*;
+import javassist.bytecode.Descriptor;
 import net.minecraft.launchwrapper.IClassNameTransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
-import org.granitepowered.granite.Granite;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.commons.Remapper;
+import org.objectweb.asm.commons.RemappingClassAdapter;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class DeobfuscatorTransformer implements IClassTransformer, IClassNameTransformer {
-    private static CodeConverter converter;
-    private static BiMap<String, String> classMap;
+    public static Mappings mappings;
+    public static File minecraftJar;
+    private static JarFile minecraftJarFile;
 
-    private static boolean loaded;
+    private Map<String, List<String>> superclasses = new HashMap<>();
 
     @Override
     public String unmapClassName(String name) {
-        if (loaded) {
-            if (classMap.inverse().containsKey(name)) {
-                return classMap.inverse().get(name);
-            } else {
-                return name;
-            }
+        if (mappings == null) return name;
+        if (name.startsWith("mc.")) name = name.split("mc\\.")[1];
+        if (mappings.getClasses().containsKey(name)) {
+            return mappings.getClasses().get(name);
         } else {
             return name;
         }
@@ -54,85 +59,154 @@ public class DeobfuscatorTransformer implements IClassTransformer, IClassNameTra
 
     @Override
     public String remapClassName(String name) {
-        if (loaded) {
-            if (classMap.containsKey(name)) {
-                return classMap.get(name);
-            } else {
-                return name;
-            }
+        if (mappings == null) return name;
+        if (mappings.getClasses().inverse().containsKey(name)) {
+            return "mc." + mappings.getClasses().inverse().get(name);
         } else {
+            if (!name.contains(".")) name = "mc." + name;
             return name;
         }
     }
 
     @Override
-    public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (loaded) {
-            // Read a CtClass from the byte array
-            ByteArrayClassPath path = new ByteArrayClassPath(name, basicClass);
-            ClassPool pool = new ClassPool();
-            pool.appendClassPath(path);
+    public byte[] transform(String name, final String transformedName, byte[] basicClass) {
+        // If mappings are loaded and initted
+        if (mappings != null) {
+            ClassReader reader = new ClassReader(basicClass);
+            ClassWriter writer = new ClassWriter(0);
 
-            try {
-                CtClass clazz = pool.get(name);
+            ClassVisitor output = writer;
 
-                // Fix all references (and implicitly rename this class too)
-                for (Map.Entry<String, String> classEntry : classMap.entrySet()) {
-                    clazz.replaceClassName(classEntry.getKey(), classEntry.getValue());
+            // Deobfuscate classes, methods and fields using a RemappingClassAdapter
+            output = new RemappingClassAdapter(output, new Remapper() {
+                @Override
+                public String mapMethodName(String owner, String name, String desc) {
+                    return findMappedMethodNameRecursively(owner, name, desc);
                 }
 
-                // Run the CodeConverter
-                clazz.instrument(converter);
+                @Override
+                public String mapFieldName(String owner, String name, String desc) {
+                    return findMappedFieldNameRecursively(owner, name, desc);
+                }
 
-                // Return the class file
-                return clazz.toBytecode();
-            } catch (NotFoundException | CannotCompileException | IOException e) {
-                e.printStackTrace();
-            }
-            return new byte[]{};
-        } else {
-            return basicClass;
+                @Override
+                public String map(String typeName) {
+                    return remapClassName(typeName.replaceAll("/", ".")).replaceAll("\\.", "/");
+                }
+            });
+
+            reader.accept(output, ClassReader.EXPAND_FRAMES);
+            return writer.toByteArray();
         }
+
+        return basicClass;
     }
 
-    public static void init(GraniteLoader loader) {
-        if (!loaded) {
-            loaded = true;
+    public List<String> findSuperclasses(String obfClassName) {
+        // Load a class, get its superclasses/interfaces and save it in a map
 
-            // Mappings will be loaded when Granite starts up, BUT
-            // transform() will NOT be called before this happens
-            Mappings mappings = loader.mappings;
+        if (superclasses.containsKey(obfClassName)) return superclasses.get(obfClassName);
+        // Find the file in the jar
+        JarEntry entry = minecraftJarFile.getJarEntry(obfClassName.replaceAll("\\.", "/") + ".class");
 
-            // Set up CodeConverter and the classMap
-            converter = new CodeConverter();
-            classMap = HashBiMap.create();
+        if (entry != null) {
+            try {
+                ClassReader reader = new ClassReader(minecraftJarFile.getInputStream(entry));
 
-            // For every class
-            for (Map.Entry<String, CtClass> classEntry : mappings.getClasses().entrySet()) {
-                // Add it to the class map
-                // This is a String, so it doesn't break if the CtClass is renamed
+                final List<String> superclassesList = new ArrayList<>();
 
-                classMap.put(classEntry.getValue().getName(), classEntry.getKey());
+                reader.accept(new ClassVisitor(Opcodes.ASM5) {
+                    @Override
+                    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+                        superclassesList.add(superName.replaceAll("/", "."));
 
-                // Fill the CodeConverter with all methods and fields
-                for (Map.Entry<String, CtMethod> methodEntry : mappings.getMethods().get(classEntry.getKey()).entrySet()) {
-                    // Rename the method to the new name and redirect the old name to the new method
-                    String oldName = methodEntry.getValue().getName();
-                    methodEntry.getValue().setName(methodEntry.getKey());
-
-                    try {
-                        converter.redirectMethodCall(oldName, methodEntry.getValue());
-                    } catch (CannotCompileException e) {
-                        e.printStackTrace();
+                        for (String interface_ : interfaces) {
+                            superclassesList.add(interface_.replaceAll("/", "."));
+                        }
                     }
-                }
+                }, 0);
 
-                for (Map.Entry<String, CtField> fieldEntry : mappings.getFields().get(classEntry.getKey()).entrySet()) {
-                    // Redirect the field to the new name and rename it
-                    converter.redirectFieldAccess(fieldEntry.getValue(), fieldEntry.getValue().getDeclaringClass(), fieldEntry.getKey());
-                    fieldEntry.getValue().setName(fieldEntry.getKey());
-                }
+                superclasses.put(obfClassName, superclassesList);
+                return superclassesList;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+        }
+        return new ArrayList<>();
+    }
+
+    public String findMappedMethodNameRecursively(String owner, String name, String desc) {
+        // ASM sometimes uses /s
+        owner = owner.replaceAll("/", ".");
+
+        String deobfOwner = remapClassName(owner);
+        if (deobfOwner.contains("mc.")) deobfOwner = deobfOwner.split("mc\\.")[1];
+
+        // If the owner is in the mappings
+        if (mappings.getMethods().containsKey(deobfOwner)) {
+            String key = name + Descriptor.toString(desc) + ":" + Descriptor.toString(desc.split("\\)")[1]);
+
+            // Get the field from the mappings
+            if (mappings.getMethods().get(deobfOwner).inverse().containsKey(key)) {
+                // Return the mapped name
+                return mappings.getMethods().get(deobfOwner).inverse().get(key);
+            }
+        }
+
+        // If not found, try parent class
+        // This is because if a ClassA has a method called foo, which deobfuscates to bar
+        // And ClassB extends ClassA and overrides foo, that too needs to be renamed to bar
+        // Even if ClassB.foo isn't directly in the mappings
+        List<String> superclasses = findSuperclasses(owner);
+        for (String superclass : superclasses) {
+            String returnValue = findMappedMethodNameRecursively(superclass, name, desc);
+
+            if (!returnValue.equals(name)) return returnValue;
+        }
+
+        // Not found - returning original name
+        return name;
+    }
+
+    public String findMappedFieldNameRecursively(String owner, String name, String desc) {
+        // ASM sometimes uses /s
+        owner = owner.replaceAll("/", ".");
+
+        String deobfOwner = remapClassName(owner);
+        if (deobfOwner.contains("mc.")) deobfOwner = deobfOwner.split("mc\\.")[1];
+
+        // If the owner is in the mappings
+        if (mappings.getFields().containsKey(deobfOwner)) {
+            String key = name + ":" + Descriptor.toString(desc);
+
+            // Get the field from the mappings
+            if (mappings.getFields().get(deobfOwner).inverse().containsKey(key)) {
+                // Return the mapped name
+                return mappings.getFields().get(deobfOwner).inverse().get(key);
+            }
+        }
+
+        // If not found, try parent class
+        // This is because if a ClassA has a field called foo, which deobfuscates to bar
+        // And ClassB extends ClassA and used the method "foo" in ClassA, the compiler will register it as an access
+        // To a field on ClassB, which the JVM will resolve to a field on ClassA
+        // So this obviously needs to be fixed
+        List<String> superclasses = findSuperclasses(owner);
+        for (String superclass : superclasses) {
+            String returnValue = findMappedFieldNameRecursively(superclass, name, desc);
+
+            if (!returnValue.equals(name)) return returnValue;
+        }
+
+        // Not found - returning original name
+        return name;
+    }
+
+    public static void init() {
+        try {
+            minecraftJarFile = new JarFile(minecraftJar);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

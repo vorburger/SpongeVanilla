@@ -24,11 +24,10 @@
 package org.granitepowered.granite.impl.potion;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.granitepowered.granite.loader.Classes;
+import org.granitepowered.granite.Classes;
 import org.granitepowered.granite.composite.Composite;
 import org.granitepowered.granite.mc.MCPotion;
 import org.granitepowered.granite.mc.MCPotionEffect;
-import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.potion.PotionEffect;
 import org.spongepowered.api.potion.PotionEffectType;
 import org.spongepowered.api.service.persistence.DataSource;

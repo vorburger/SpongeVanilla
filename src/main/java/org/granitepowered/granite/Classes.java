@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.granitepowered.granite.loader;
+package org.granitepowered.granite;
 
 import javassist.*;
 import javassist.bytecode.Descriptor;
@@ -33,8 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Classes {
-    static ClassPool pool;
-    static boolean loadingDone = false;
+    public static ClassPool pool;
 
     private static Map<String, Class> classCache = new HashMap<>();
     private static Map<String, Method> methodCache = new HashMap<>();
@@ -98,6 +97,7 @@ public class Classes {
     }
 
     public static Class<?> getClass(String className) {
+        if (!className.contains(".")) className = "mc." + className;
         if (classCache.containsKey(className)) {
             return classCache.get(className);
         }

@@ -28,7 +28,7 @@ import static org.granitepowered.granite.util.MinecraftUtils.wrap;
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.NotImplementedException;
 import org.granitepowered.granite.Granite;
-import org.granitepowered.granite.loader.Classes;
+import org.granitepowered.granite.Classes;
 import org.granitepowered.granite.composite.Composite;
 import org.granitepowered.granite.impl.text.translation.GraniteTranslation;
 import org.granitepowered.granite.mc.MCBlock;
