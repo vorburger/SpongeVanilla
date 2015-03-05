@@ -31,11 +31,19 @@ import javassist.ClassPool;
 import mc.Bootstrap;
 import org.granitepowered.granite.impl.GraniteMinecraftVersion;
 import org.granitepowered.granite.impl.GraniteServer;
-import org.granitepowered.granite.impl.event.state.*;
+import org.granitepowered.granite.impl.event.state.GraniteConstructionEvent;
+import org.granitepowered.granite.impl.event.state.GraniteInitializationEvent;
+import org.granitepowered.granite.impl.event.state.GraniteLoadCompleteEvent;
+import org.granitepowered.granite.impl.event.state.GranitePostInitializationEvent;
+import org.granitepowered.granite.impl.event.state.GranitePreInitializationEvent;
 import org.granitepowered.granite.impl.guice.GraniteGuiceModule;
 import org.granitepowered.granite.impl.text.chat.GraniteChatType;
 import org.granitepowered.granite.impl.text.format.GraniteTextColor;
-import org.granitepowered.granite.loader.*;
+import org.granitepowered.granite.loader.DeobfuscatorTransformer;
+import org.granitepowered.granite.loader.GraniteTweaker;
+import org.granitepowered.granite.loader.Mappings;
+import org.granitepowered.granite.loader.MappingsLoader;
+import org.granitepowered.granite.loader.MinecraftLoader;
 import org.granitepowered.granite.util.ReflectionUtils;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Game;
@@ -61,9 +69,14 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
 
 public class GraniteStartup {
+
     String[] args;
 
     String serverVersion;
@@ -277,7 +290,9 @@ public class GraniteStartup {
 
         if (!minecraftJar.exists()) {
             Granite.getInstance().getLogger().warn("Could not find Minecraft .jar, downloading");
-            HttpRequest req = HttpRequest.get("https://s3.amazonaws.com/Minecraft.Download/versions/" + version + "/minecraft_server." + version + ".jar");
+            HttpRequest
+                    req =
+                    HttpRequest.get("https://s3.amazonaws.com/Minecraft.Download/versions/" + version + "/minecraft_server." + version + ".jar");
             if (req.code() == 404) {
                 throw new RuntimeException("404 error whilst trying to download Minecraft");
             } else if (req.code() == 200) {

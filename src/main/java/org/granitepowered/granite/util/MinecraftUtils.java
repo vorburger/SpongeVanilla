@@ -27,15 +27,19 @@ import com.flowpowered.math.vector.Vector3f;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
-import org.granitepowered.granite.Granite;
 import org.granitepowered.granite.Classes;
+import org.granitepowered.granite.Granite;
 import org.granitepowered.granite.composite.Composite;
 import org.granitepowered.granite.impl.GraniteGameProfile;
 import org.granitepowered.granite.impl.GraniteServer;
 import org.granitepowered.granite.impl.block.GraniteBlockProperty;
 import org.granitepowered.granite.impl.block.GraniteBlockState;
 import org.granitepowered.granite.impl.block.GraniteBlockType;
-import org.granitepowered.granite.impl.entity.*;
+import org.granitepowered.granite.impl.entity.GraniteEntity;
+import org.granitepowered.granite.impl.entity.GraniteEntityEnderCrystal;
+import org.granitepowered.granite.impl.entity.GraniteEntityExperienceOrb;
+import org.granitepowered.granite.impl.entity.GraniteEntityFallingBlock;
+import org.granitepowered.granite.impl.entity.GraniteEntityItem;
 import org.granitepowered.granite.impl.entity.explosive.GraniteEntityPrimedTNT;
 import org.granitepowered.granite.impl.entity.hanging.art.GraniteArt;
 import org.granitepowered.granite.impl.entity.living.GraniteEntityArmorStand;
@@ -71,9 +75,10 @@ import org.granitepowered.granite.mc.MCInterface;
 import org.granitepowered.granite.mc.MCRotations;
 import org.spongepowered.api.text.message.Message;
 
+import java.util.Objects;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 public class MinecraftUtils {
 

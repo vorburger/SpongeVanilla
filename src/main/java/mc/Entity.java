@@ -23,7 +23,6 @@
 
 package mc;
 
-public enum EnumArt {
-    ;
-    public String name;
+public class Entity {
+
 }

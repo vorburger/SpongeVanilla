@@ -1,6 +1,6 @@
 {
   "package": "org.granitepowered.granite.mixin",
   "mixins": [
-    "MixinEnumArt"
+    "entity.MixinEntity"
   ]
 }

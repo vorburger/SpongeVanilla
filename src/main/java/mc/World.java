@@ -21,19 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.granitepowered.granite.mixin;
+package mc;
 
-import mc.EnumArt;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+public class World {
 
-@Mixin(EnumArt.class)
-public class MixinEnumArt {
-    @Shadow
-    private String name;
-
-    public MixinEnumArt() {
-        name = "hi";
-    }
 }

@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(Bootstrap.class)
 public class MixinBootstrap {
+
     public static void register() {
-        System.out.println("Test");
     }
 }

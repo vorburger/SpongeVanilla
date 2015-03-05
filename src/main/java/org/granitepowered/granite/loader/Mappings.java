@@ -25,15 +25,13 @@ package org.granitepowered.granite.loader;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import javassist.*;
-import javassist.bytecode.Descriptor;
 import org.apache.commons.lang3.StringUtils;
-import org.granitepowered.granite.Classes;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Mappings {
+
     // All Deobf -> Obf
     private BiMap<String, String> classes;
     private Map<String, BiMap<String, String>> methods;

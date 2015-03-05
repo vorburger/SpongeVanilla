@@ -23,7 +23,11 @@
 
 package org.granitepowered.granite;
 
-import javassist.*;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtField;
+import javassist.CtMethod;
+import javassist.NotFoundException;
 import javassist.bytecode.Descriptor;
 
 import java.lang.reflect.Field;
@@ -33,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Classes {
+
     public static ClassPool pool;
 
     private static Map<String, Class> classCache = new HashMap<>();
@@ -97,7 +102,9 @@ public class Classes {
     }
 
     public static Class<?> getClass(String className) {
-        if (!className.contains(".")) className = "mc." + className;
+        if (!className.contains(".")) {
+            className = "mc." + className;
+        }
         if (classCache.containsKey(className)) {
             return classCache.get(className);
         }

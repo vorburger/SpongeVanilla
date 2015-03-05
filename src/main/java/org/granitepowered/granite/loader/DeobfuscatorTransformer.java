@@ -35,11 +35,15 @@ import org.objectweb.asm.commons.RemappingClassAdapter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class DeobfuscatorTransformer implements IClassTransformer, IClassNameTransformer {
+
     public static Mappings mappings;
     public static File minecraftJar;
     private static JarFile minecraftJarFile;
@@ -48,8 +52,12 @@ public class DeobfuscatorTransformer implements IClassTransformer, IClassNameTra
 
     @Override
     public String unmapClassName(String name) {
-        if (mappings == null) return name;
-        if (name.startsWith("mc.")) name = name.split("mc\\.")[1];
+        if (mappings == null) {
+            return name;
+        }
+        if (name.startsWith("mc.")) {
+            name = name.split("mc\\.")[1];
+        }
         if (mappings.getClasses().containsKey(name)) {
             return mappings.getClasses().get(name);
         } else {
@@ -59,11 +67,15 @@ public class DeobfuscatorTransformer implements IClassTransformer, IClassNameTra
 
     @Override
     public String remapClassName(String name) {
-        if (mappings == null) return name;
+        if (mappings == null) {
+            return name;
+        }
         if (mappings.getClasses().inverse().containsKey(name)) {
             return "mc." + mappings.getClasses().inverse().get(name);
         } else {
-            if (!name.contains(".")) name = "mc." + name;
+            if (!name.contains(".")) {
+                name = "mc." + name;
+            }
             return name;
         }
     }
@@ -105,7 +117,9 @@ public class DeobfuscatorTransformer implements IClassTransformer, IClassNameTra
     public List<String> findSuperclasses(String obfClassName) {
         // Load a class, get its superclasses/interfaces and save it in a map
 
-        if (superclasses.containsKey(obfClassName)) return superclasses.get(obfClassName);
+        if (superclasses.containsKey(obfClassName)) {
+            return superclasses.get(obfClassName);
+        }
         // Find the file in the jar
         JarEntry entry = minecraftJarFile.getJarEntry(obfClassName.replaceAll("\\.", "/") + ".class");
 
@@ -140,7 +154,9 @@ public class DeobfuscatorTransformer implements IClassTransformer, IClassNameTra
         owner = owner.replaceAll("/", ".");
 
         String deobfOwner = remapClassName(owner);
-        if (deobfOwner.contains("mc.")) deobfOwner = deobfOwner.split("mc\\.")[1];
+        if (deobfOwner.contains("mc.")) {
+            deobfOwner = deobfOwner.split("mc\\.")[1];
+        }
 
         // If the owner is in the mappings
         if (mappings.getMethods().containsKey(deobfOwner)) {
@@ -161,7 +177,9 @@ public class DeobfuscatorTransformer implements IClassTransformer, IClassNameTra
         for (String superclass : superclasses) {
             String returnValue = findMappedMethodNameRecursively(superclass, name, desc);
 
-            if (!returnValue.equals(name)) return returnValue;
+            if (!returnValue.equals(name)) {
+                return returnValue;
+            }
         }
 
         // Not found - returning original name
@@ -173,7 +191,9 @@ public class DeobfuscatorTransformer implements IClassTransformer, IClassNameTra
         owner = owner.replaceAll("/", ".");
 
         String deobfOwner = remapClassName(owner);
-        if (deobfOwner.contains("mc.")) deobfOwner = deobfOwner.split("mc\\.")[1];
+        if (deobfOwner.contains("mc.")) {
+            deobfOwner = deobfOwner.split("mc\\.")[1];
+        }
 
         // If the owner is in the mappings
         if (mappings.getFields().containsKey(deobfOwner)) {
@@ -195,7 +215,9 @@ public class DeobfuscatorTransformer implements IClassTransformer, IClassNameTra
         for (String superclass : superclasses) {
             String returnValue = findMappedFieldNameRecursively(superclass, name, desc);
 
-            if (!returnValue.equals(name)) return returnValue;
+            if (!returnValue.equals(name)) {
+                return returnValue;
+            }
         }
 
         // Not found - returning original name

@@ -49,7 +49,6 @@ import org.spongepowered.api.service.command.SimpleCommandService;
 import org.spongepowered.api.service.event.EventManager;
 
 import javax.inject.Inject;
-import java.io.File;
 
 public class Granite {
 

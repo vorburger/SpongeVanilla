@@ -33,6 +33,7 @@ import java.io.FileReader;
 import java.util.Map;
 
 public class MappingsLoader {
+
     public static Mappings load(File mappingsFile) {
         try {
             JsonElement root = new Gson().fromJson(new FileReader(mappingsFile), JsonElement.class);

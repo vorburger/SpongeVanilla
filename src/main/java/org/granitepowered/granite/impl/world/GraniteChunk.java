@@ -25,6 +25,7 @@ package org.granitepowered.granite.impl.world;
 
 import static org.granitepowered.granite.util.MinecraftUtils.wrap;
 
+import com.flowpowered.math.vector.Vector2i;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Optional;
@@ -38,12 +39,14 @@ import org.granitepowered.granite.mc.MCChunk;
 import org.granitepowered.granite.mc.MCChunkProvider;
 import org.granitepowered.granite.mc.MCEntity;
 import org.spongepowered.api.block.BlockLoc;
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntitySnapshot;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.service.persistence.data.DataContainer;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.biome.BiomeType;
+import org.spongepowered.api.world.weather.Weather;
 
 import java.util.Collection;
 import java.util.Set;
@@ -102,14 +105,19 @@ public class GraniteChunk extends Composite<MCChunk> implements Chunk {
     }
 
     @Override
-    public BiomeType getBiome(Vector3i vector3i) {
-        return getWorld().getBiome(toWorldCoordinates(vector3i.toDouble()).toInt());
+    public BiomeType getBiome(Vector2i vector2i) {
+        return getWorld().getBiome(vector2i);
     }
 
     @Override
-    public void setBiome(Vector3i vector3i, BiomeType biomeType) {
+    public BiomeType getBiome(int i, int i1) {
+        return null;
+    }
+
+    @Override
+    public void setBiome(Vector2i vector3i, BiomeType biomeType) {
         int x = vector3i.getX() % 16;
-        int z = vector3i.getZ() % 16;
+        int z = vector3i.getY() % 16;
         int idx = z << 4 | x;
 
         byte id = (byte) (((GraniteBiomeType) biomeType).obj.fieldGet$biomeID() % 256);
@@ -118,13 +126,28 @@ public class GraniteChunk extends Composite<MCChunk> implements Chunk {
     }
 
     @Override
-    public BlockLoc getBlock(Vector3d vector3d) {
-        return getBlock(toWorldCoordinates(vector3d));
+    public void setBiome(int i, int i1, BiomeType biomeType) {
+
     }
 
     @Override
-    public BlockLoc getBlock(int x, int y, int z) {
-        return getBlock(new Vector3d(x, y, z));
+    public BlockState getBlock(Vector3i vector3i) {
+        return null;
+    }
+
+    @Override
+    public BlockState getBlock(int i, int i1, int i2) {
+        return null;
+    }
+
+    @Override
+    public void setBlock(Vector3i vector3i, BlockState blockState) {
+
+    }
+
+    @Override
+    public void setBlock(int i, int i1, int i2, BlockState blockState) {
+
     }
 
     @Override
@@ -189,5 +212,40 @@ public class GraniteChunk extends Composite<MCChunk> implements Chunk {
 
     public MCChunkProvider getChunkProvider() {
         return getWorld().obj.fieldGet$chunkProvider();
+    }
+
+    @Override
+    public Weather getWeather() {
+        return null;
+    }
+
+    @Override
+    public long getRemainingDuration() {
+        return 0;
+    }
+
+    @Override
+    public long getRunningDuration() {
+        return 0;
+    }
+
+    @Override
+    public void forecast(Weather weather) {
+
+    }
+
+    @Override
+    public void forecast(Weather weather, long l) {
+
+    }
+
+    @Override
+    public BlockLoc getFullBlock(Vector3i vector3i) {
+        return null;
+    }
+
+    @Override
+    public BlockLoc getFullBlock(int i, int i1, int i2) {
+        return null;
     }
 }

@@ -30,13 +30,11 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import mc.EnumArt;
 import org.apache.commons.lang3.NotImplementedException;
-import org.granitepowered.granite.Granite;
 import org.granitepowered.granite.Classes;
+import org.granitepowered.granite.Granite;
 import org.granitepowered.granite.impl.effect.particle.GraniteParticleEffectBuilder;
 import org.granitepowered.granite.impl.effect.particle.GraniteParticleType;
-import org.granitepowered.granite.impl.entity.hanging.art.GraniteArt;
 import org.granitepowered.granite.impl.entity.player.gamemode.GraniteGameMode;
 import org.granitepowered.granite.impl.item.GraniteEnchantment;
 import org.granitepowered.granite.impl.item.inventory.GraniteItemStackBuilder;
@@ -61,7 +59,6 @@ import org.granitepowered.granite.impl.world.biome.GraniteBiomeType;
 import org.granitepowered.granite.mc.MCBiomeGenBase;
 import org.granitepowered.granite.mc.MCBlock;
 import org.granitepowered.granite.mc.MCEnchantment;
-import org.granitepowered.granite.mc.MCEnumArt;
 import org.granitepowered.granite.mc.MCGameRules;
 import org.granitepowered.granite.mc.MCInterface;
 import org.granitepowered.granite.mc.MCItem;
@@ -83,9 +80,9 @@ import org.spongepowered.api.effect.particle.ParticleEffectBuilder;
 import org.spongepowered.api.effect.particle.ParticleType;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.effect.sound.SoundType;
+import org.spongepowered.api.entity.EntityInteractionType;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.hanging.art.Art;
-import org.spongepowered.api.entity.hanging.art.Arts;
 import org.spongepowered.api.entity.living.animal.DyeColor;
 import org.spongepowered.api.entity.living.animal.DyeColors;
 import org.spongepowered.api.entity.living.animal.HorseColor;
@@ -133,7 +130,6 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -204,24 +200,6 @@ public class GraniteGameRegistry implements GameRegistry {
 
     private void registerArts() {
         Granite.getInstance().getLogger().info("Registering Arts");
-
-        List<EnumArt> mcEnumArts = Arrays.asList(EnumArt.values());
-        for (Field field : Arts.class.getDeclaredFields()) {
-            ReflectionUtils.forceAccessible(field);
-
-            String name = field.getName().toLowerCase().replace("_", "");
-            for (EnumArt mcEnumArt : mcEnumArts) {
-                if (name.equals(mcEnumArt.name.toLowerCase())) {
-                    try {
-                        Art art = new GraniteArt(mcEnumArt);
-                        field.set(null, art);
-                        arts.put(name, art);
-                    } catch (IllegalAccessException e) {
-                        Throwables.propagate(e);
-                    }
-                }
-            }
-        }
     }
 
     private void registerBannerPatternShapes() {
@@ -1123,5 +1101,15 @@ public class GraniteGameRegistry implements GameRegistry {
     @Override
     public Optional<Difficulty> getDifficulty(String s) {
         throw new NotImplementedException("");
+    }
+
+    @Override
+    public Collection<EntityInteractionType> getEntityInteractionTypes() {
+        return null;
+    }
+
+    @Override
+    public Optional<EntityInteractionType> getEntityInteractionType(String s) {
+        return null;
     }
 }

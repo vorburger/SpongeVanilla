@@ -1,4 +1,4 @@
-package mc;/*
+/*
  * License (MIT)
  *
  * Copyright (c) 2014-2015 Granite Team
@@ -21,7 +21,10 @@ package mc;/*
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+package mc;
+
 public class Bootstrap {
+
     public static void register() {
     }
 }

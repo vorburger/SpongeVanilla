@@ -134,7 +134,7 @@ public class GranitePluginManager implements PluginManager {
                     Granite.getInstance().getLogger().info("Loaded {} ({})!", plugin.getName(), plugin.getVersion());
                 } else {
                     Granite.getInstance().getLogger().info("Could not load {} ({})! Missing dependencies: {}", plugin.getName(), plugin.getVersion(),
-                                                      missingDependencies.toString());
+                                                           missingDependencies.toString());
                 }
             }
         }

@@ -26,6 +26,7 @@ package org.granitepowered.granite;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class Main {
+
     public static void main(String[] args) {
         // The startup process is a little complicated
         // Granite's Main calls LaunchWrapper's Main

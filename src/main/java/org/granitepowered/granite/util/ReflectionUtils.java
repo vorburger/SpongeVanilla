@@ -28,8 +28,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import javassist.CtClass;
 import javassist.NotFoundException;
-import org.granitepowered.granite.Granite;
 import org.granitepowered.granite.Classes;
+import org.granitepowered.granite.Granite;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
