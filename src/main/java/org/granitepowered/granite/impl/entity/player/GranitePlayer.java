@@ -81,6 +81,7 @@ import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.text.title.Titles;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.world.Location;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -107,13 +108,8 @@ public class GranitePlayer extends GraniteEntityPlayer<MCEntityPlayerMP> impleme
     }
 
     @Override
-    public boolean getAllowFlight() {
-        return obj.fieldGet$capabilities().fieldGet$allowFlying();
-    }
+    public void setDisplayName(@Nullable Message message) {
 
-    @Override
-    public void setAllowFlight(boolean allowFlight) {
-        obj.fieldGet$capabilities().fieldSet$allowFlying(allowFlight);
     }
 
     @Override
@@ -292,6 +288,16 @@ public class GranitePlayer extends GraniteEntityPlayer<MCEntityPlayerMP> impleme
     @Override
     public boolean isOnline() {
         return true;
+    }
+
+    @Override
+    public Optional<Location> getBedLocation() {
+        return null;
+    }
+
+    @Override
+    public void setBedLocation(@Nullable Location location) {
+
     }
 
     @Override
@@ -488,33 +494,48 @@ public class GranitePlayer extends GraniteEntityPlayer<MCEntityPlayerMP> impleme
     }
 
     @Override
-    public float getHunger() {
-        return obj.fieldGet$foodStats().fieldGet$foodLevel();
+    public double getExhaustion() {
+        return 0;
     }
 
     @Override
-    public void setHunger(float hunger) {
-        obj.fieldGet$foodStats().fieldSet$foodLevel((int) hunger);
+    public void setExhaustion(double v) {
+
     }
 
     @Override
-    public float getSaturation() {
-        return obj.fieldGet$foodStats().fieldGet$foodSaturationLevel();
+    public double getSaturation() {
+        return 0;
     }
 
     @Override
-    public void setSaturation(float saturation) {
-        obj.fieldGet$foodStats().fieldSet$foodSaturationLevel(saturation);
+    public void setSaturation(double v) {
+
     }
 
     @Override
-    public int getExperience() {
-        return (int) obj.fieldGet$experience();
+    public double getFoodLevel() {
+        return 0;
     }
 
     @Override
-    public void setExperience(int experience) {
-        obj.fieldSet$experience((float) experience);
+    public void setFoodLevel(double v) {
+
+    }
+
+    @Override
+    public int getExperienceSinceLevel() {
+        return 0;
+    }
+
+    @Override
+    public void setExperienceSinceLevel(int i) {
+
+    }
+
+    @Override
+    public int getExperienceBetweenLevels() {
+        return 0;
     }
 
     @Override
@@ -528,13 +549,33 @@ public class GranitePlayer extends GraniteEntityPlayer<MCEntityPlayerMP> impleme
     }
 
     @Override
-    public int getTotalExperinece() {
-        return obj.fieldGet$experienceTotal();
+    public int getTotalExperience() {
+        return 0;
     }
 
     @Override
     public void setTotalExperience(int totalExperience) {
         obj.fieldSet$experienceTotal((int) totalExperience);
+    }
+
+    @Override
+    public boolean isSneaking() {
+        return false;
+    }
+
+    @Override
+    public void setSneaking(boolean b) {
+
+    }
+
+    @Override
+    public boolean isFlying() {
+        return false;
+    }
+
+    @Override
+    public void setFlying(boolean b) {
+
     }
 
     @Override

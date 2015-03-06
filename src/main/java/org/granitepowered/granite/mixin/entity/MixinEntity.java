@@ -49,10 +49,10 @@ public abstract class MixinEntity implements Entity {
     private float originalHeight;
 
     @Shadow
-    protected UUID entityUUID;
+    protected UUID entityUniqueID;
 
     @Shadow
-    public mc.World world;
+    public mc.World worldObj;
 
     @Shadow
     public double posX;
@@ -94,26 +94,23 @@ public abstract class MixinEntity implements Entity {
     public int fireResistance;
 
     @Shadow
-    private int fireTicks;
+    private int fire;
 
     @Shadow
     public mc.Entity riddenByEntity;
 
     @Shadow
-    public mc.Entity riddingEntity;
+    public mc.Entity ridingEntity;
 
     /*@Shadow
     public abstract void shadow$setPositionAndUpdate(double x, double y, double z);*/
 
     @Shadow
-    protected abstract void shadow$setRotation(float yaw, float pitch);
-
-    @Shadow
-    public abstract void shadow$mountEntity(mc.Entity entity);
+    public abstract void mountEntity(mc.Entity entity);
 
     @Override
     public World getWorld() {
-        return (World) this.world;
+        return (World) this.worldObj;
     }
 
     @Override
@@ -140,7 +137,8 @@ public abstract class MixinEntity implements Entity {
 
     @Override
     public void setRotation(Vector3f vector3f) {
-        shadow$setRotation(vector3f.getX(), vector3f.getY());
+        rotationPitch = vector3f.getX() % 360;
+        rotationYaw = vector3f.getY() % 360;
     }
 
     @Override
@@ -162,12 +160,12 @@ public abstract class MixinEntity implements Entity {
 
     @Override
     public Optional<Entity> getVehicle() {
-        return Optional.fromNullable((Entity) this.riddingEntity);
+        return Optional.fromNullable((Entity) this.ridingEntity);
     }
 
     @Override
     public Entity getBaseVehicle() {
-        if (this.riddingEntity == null) {
+        if (this.ridingEntity == null) {
             return this;
         }
 
@@ -180,7 +178,7 @@ public abstract class MixinEntity implements Entity {
 
     @Override
     public boolean setPassenger(Entity entity) {
-        if (this.riddingEntity == null) {
+        if (this.ridingEntity == null) {
             if (entity == null) {
                 return true;
             }
@@ -198,7 +196,7 @@ public abstract class MixinEntity implements Entity {
 
     @Override
     public boolean setVehicle(Entity entity) {
-        shadow$mountEntity((mc.Entity) entity);
+        mountEntity((mc.Entity) entity);
         return true;
     }
 
@@ -246,12 +244,12 @@ public abstract class MixinEntity implements Entity {
 
     @Override
     public int getFireTicks() {
-        return this.fireTicks;
+        return this.fire;
     }
 
     @Override
     public void setFireTicks(int fireTicks) {
-        this.fireTicks = fireTicks;
+        this.fire = fireTicks;
     }
 
     @Override
@@ -291,6 +289,6 @@ public abstract class MixinEntity implements Entity {
 
     @Override
     public UUID getUniqueId() {
-        return this.entityUUID;
+        return this.entityUniqueID;
     }
 }
