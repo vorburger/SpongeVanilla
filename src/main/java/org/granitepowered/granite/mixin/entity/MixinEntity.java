@@ -46,72 +46,54 @@ import javax.annotation.Nullable;
 @Mixin(value = mc.Entity.class, remap = false)
 public abstract class MixinEntity implements Entity {
 
+    @Shadow
+    public mc.World world;
+    @Shadow
+    public double posX;
+    @Shadow
+    public double posY;
+    @Shadow
+    public double posZ;
+    @Shadow
+    public double motionX;
+    @Shadow
+    public double motionY;
+    @Shadow
+    public double motionZ;
+    @Shadow
+    public float rotationYaw;
+    @Shadow
+    public float rotationPitch;
+    @Shadow
+    public float width;
+    @Shadow
+    public float height;
+    @Shadow
+    public boolean isDead;
+    @Shadow
+    public boolean onGround;
+    @Shadow
+    public int fireResistance;
+    @Shadow
+    public mc.Entity riddenByEntity;
+    @Shadow
+    public mc.Entity ridingEntity;
+    @Shadow
+    protected UUID entityUUID;
     private EntityType entityType;
     private boolean teleporting;
     private Entity teleportVehicle;
     private float originalWidth;
     private float originalHeight;
-
-    @Shadow
-    protected UUID entityUniqueID;
-
-    @Shadow
-    public mc.World worldObj;
-
-    @Shadow
-    public double posX;
-
-    @Shadow
-    public double posY;
-
-    @Shadow
-    public double posZ;
-
-    @Shadow
-    public double motionX;
-
-    @Shadow
-    public double motionY;
-
-    @Shadow
-    public double motionZ;
-
-    @Shadow
-    public float rotationYaw;
-
-    @Shadow
-    public float rotationPitch;
-
-    @Shadow
-    public float width;
-
-    @Shadow
-    public float height;
-
-    @Shadow
-    public boolean isDead;
-
-    @Shadow
-    public boolean onGround;
-
-    @Shadow
-    public int fireResistance;
-
     @Shadow
     private int fire;
-
-    @Shadow
-    public mc.Entity riddenByEntity;
-
-    @Shadow
-    public mc.Entity ridingEntity;
 
     @Shadow
     public abstract void mountEntity(mc.Entity entity);
 
     @Override
     public World getWorld() {
-        return (World) this.worldObj;
+        return (World) this.world;
     }
 
     @Override
@@ -290,6 +272,6 @@ public abstract class MixinEntity implements Entity {
 
     @Override
     public UUID getUniqueId() {
-        return this.entityUniqueID;
+        return this.entityUUID;
     }
 }

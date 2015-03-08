@@ -32,7 +32,11 @@ import mc.Bootstrap;
 import mc.DedicatedServer;
 import mc.MinecraftServer;
 import org.granitepowered.granite.guice.GraniteGuiceModule;
-import org.granitepowered.granite.loader.*;
+import org.granitepowered.granite.loader.DeobfuscatorTransformer;
+import org.granitepowered.granite.loader.GraniteTweaker;
+import org.granitepowered.granite.loader.Mappings;
+import org.granitepowered.granite.loader.MappingsLoader;
+import org.granitepowered.granite.loader.MinecraftLoader;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Server;
 
@@ -49,8 +53,6 @@ import java.util.Objects;
 import java.util.Properties;
 
 public class GraniteStartup {
-
-    String[] args;
 
     String serverVersion;
     String apiVersion;
@@ -144,7 +146,7 @@ public class GraniteStartup {
                 Granite.getInstance().getLogger().info("New Years Eve. Make way for " + Integer.toString(Integer.parseInt(year) + 1) + "!");
             }
 
-            Granite.instance.server = (Server) new DedicatedServer(new File("worlds/"));
+            Granite.instance.server = (Server) new DedicatedServer(new File("worldServers/"));
 
             // Start the server
             Thread t = new Thread((MinecraftServer) Granite.instance.server);
@@ -167,9 +169,9 @@ public class GraniteStartup {
         Map<String, TextStyle.Base> styles = new HashMap<>();
         for (Map.Entry<String, TextStyle.Base> entry : GraniteTextFormatFactory.styles.entrySet()) {
             styles.put(entry.getKey().toUpperCase(), entry.getValue());
-        }*/
+        }
 
-        //injectConstants(TextStyles.class, styles);
+        injectConstants(TextStyles.class, styles);*/
     }
 
     private void injectEnumConstants(Class<?> destination, Class<? extends Enum> source) {

@@ -23,10 +23,9 @@
 
 package mc;
 
-import org.spongepowered.api.world.World;
-
 public class MinecraftServer implements Runnable {
-    public World[] worldServers;
+
+    public WorldServer[] worldServers;
 
     public ServerConfigurationManager serverConfigManager;
 
@@ -34,7 +33,7 @@ public class MinecraftServer implements Runnable {
 
     public boolean onlineMode;
 
-    public void stopServer() {
+    protected void stopServer() {
     }
 
     @Override

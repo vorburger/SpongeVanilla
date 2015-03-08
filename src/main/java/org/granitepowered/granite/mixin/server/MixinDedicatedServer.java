@@ -26,23 +26,28 @@ package org.granitepowered.granite.mixin.server;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import mc.MinecraftServer;
+import mc.WorldServer;
 import org.apache.commons.lang3.NotImplementedException;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.net.ChannelListener;
 import org.spongepowered.api.net.ChannelRegistrationException;
 import org.spongepowered.api.text.message.Message;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.gen.WorldGenerator;
 import org.spongepowered.asm.mixin.Mixin;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+@NonnullByDefault
 @Mixin(value = mc.DedicatedServer.class, remap = false)
 public class MixinDedicatedServer extends MinecraftServer implements Server {
+
     @Override
     public void registerChannel(Object o, ChannelListener channelListener, String s) throws ChannelRegistrationException {
         // TODO: Channels
@@ -57,7 +62,7 @@ public class MixinDedicatedServer extends MinecraftServer implements Server {
 
     @Override
     public Collection<Player> getOnlinePlayers() {
-        return ImmutableList.copyOf(serverConfigManager.playerEntityList);
+        return ImmutableList.copyOf(serverConfigManager.playerplayerListList);
     }
 
     @Override
@@ -68,36 +73,48 @@ public class MixinDedicatedServer extends MinecraftServer implements Server {
     @Override
     public Optional<Player> getPlayer(UUID uuid) {
         for (Player player : getOnlinePlayers()) {
-            if (player.getUniqueId().equals(uuid)) return Optional.of(player);
+            if (player.getUniqueId().equals(uuid)) {
+                return Optional.of(player);
+            }
         }
         return Optional.absent();
     }
 
     @Override
-    public Optional<Player> getPlayer(String s) {
+    public Optional<Player> getPlayer(String name) {
         for (Player player : getOnlinePlayers()) {
-            if (player.getName().equals(s)) return Optional.of(player);
+            if (player.getName().equals(name)) {
+                return Optional.of(player);
+            }
         }
         return Optional.absent();
     }
 
     @Override
     public Collection<World> getWorlds() {
-        return ImmutableList.copyOf(worldServers);
+        List<World> worlds = new ArrayList<>();
+        for (WorldServer worldServer : worldServers) {
+            worlds.add((World) worldServer);
+        }
+        return worlds;
     }
 
     @Override
     public Optional<World> getWorld(UUID uuid) {
         for (World world : getWorlds()) {
-            if (world.getUniqueId().equals(uuid)) return Optional.of(world);
+            if (world.getUniqueId().equals(uuid)) {
+                return Optional.of(world);
+            }
         }
         return Optional.absent();
     }
 
     @Override
-    public Optional<World> getWorld(String s) {
+    public Optional<World> getWorld(String name) {
         for (World world : getWorlds()) {
-            if (world.getName().equals(s)) return Optional.of(world);
+            if (world.getName().equals(name)) {
+                return Optional.of(world);
+            }
         }
         return Optional.absent();
     }
@@ -155,8 +172,8 @@ public class MixinDedicatedServer extends MinecraftServer implements Server {
     }
 
     @Override
-    public void setHasWhitelist(boolean b) {
-        serverConfigManager.whiteListEnforced = b;
+    public void setHasWhitelist(boolean hasWhitelist) {
+        serverConfigManager.whiteListEnforced = hasWhitelist;
     }
 
     @Override

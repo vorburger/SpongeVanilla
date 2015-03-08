@@ -26,6 +26,7 @@ package mc;
 import java.io.File;
 
 public class DedicatedServer extends MinecraftServer {
+
     public DedicatedServer(File worlds) {
     }
 }

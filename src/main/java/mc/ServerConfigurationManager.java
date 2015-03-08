@@ -28,7 +28,8 @@ import org.spongepowered.api.entity.player.Player;
 import java.util.List;
 
 public class ServerConfigurationManager {
-    public List<Player> playerEntityList;
+
+    public List<Player> playerplayerListList;
 
     public int maxPlayers;
 
