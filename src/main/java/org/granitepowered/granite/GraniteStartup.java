@@ -30,6 +30,7 @@ import com.google.inject.Injector;
 import javassist.ClassPool;
 import mc.Bootstrap;
 import mc.DedicatedServer;
+import mc.MinecraftServer;
 import org.granitepowered.granite.guice.GraniteGuiceModule;
 import org.granitepowered.granite.loader.*;
 import org.slf4j.LoggerFactory;
@@ -146,8 +147,8 @@ public class GraniteStartup {
             Granite.instance.server = (Server) new DedicatedServer(new File("worlds/"));
 
             // Start the server
-            // This will run on the same thread here
-            ((DedicatedServer) Granite.instance.server).startServer();
+            Thread t = new Thread((MinecraftServer) Granite.instance.server);
+            t.start();
         } catch (Throwable t) {
             Granite.error("We did a REALLY BIG boo-boo :'(", t);
         }

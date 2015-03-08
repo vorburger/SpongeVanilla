@@ -23,15 +23,9 @@
 
 package mc;
 
-import org.granitepowered.granite.mixin.server.MinecraftServer;
-
 import java.io.File;
 
 public class DedicatedServer extends MinecraftServer {
     public DedicatedServer(File worlds) {
-    }
-
-    public boolean startServer() {
-        return false;
     }
 }

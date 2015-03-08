@@ -21,12 +21,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.granitepowered.granite.mixin.server;
+package mc;
 
-import mc.ServerConfigurationManager;
 import org.spongepowered.api.world.World;
 
-public class MinecraftServer {
+public class MinecraftServer implements Runnable {
     public World[] worldServers;
 
     public ServerConfigurationManager serverConfigManager;
@@ -36,5 +35,9 @@ public class MinecraftServer {
     public boolean onlineMode;
 
     public void stopServer() {
+    }
+
+    @Override
+    public void run() {
     }
 }

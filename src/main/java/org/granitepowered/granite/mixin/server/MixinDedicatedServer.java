@@ -25,6 +25,7 @@ package org.granitepowered.granite.mixin.server;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import mc.MinecraftServer;
 import org.apache.commons.lang3.NotImplementedException;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.entity.player.Player;
