@@ -162,4 +162,12 @@ public class Granite implements Game {
     public MinecraftVersion getMinecraftVersion() {
         return this.minecraftVersion;
     }
+
+    public GameRegistry getGameRegistry() {
+        return gameRegistry;
+    }
+
+    public String getVersion() {
+        return version;
+    }
 }

@@ -23,13 +23,11 @@
 
 package org.granitepowered.granite.loader;
 
+import javassist.bytecode.AccessFlag;
 import javassist.bytecode.Descriptor;
 import net.minecraft.launchwrapper.IClassNameTransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 import org.objectweb.asm.commons.Remapper;
 import org.objectweb.asm.commons.RemappingClassAdapter;
 
@@ -110,6 +108,33 @@ public class DeobfuscatorTransformer implements IClassTransformer, IClassNameTra
                     return remapClassName(typeName.replaceAll("/", ".")).replaceAll("\\.", "/");
                 }
             });
+
+            // Enough is ENOUGH! I have had it with these motherfuckin' snowmen in these motherfuckin' classes! Everybody strap in! We're 'bout to edit some fuckin' bytecode.
+            // PS. Damn you Grum
+            output = new ClassVisitor(Opcodes.ASM5, output) {
+                @Override
+                public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+                    return new MethodVisitor(Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions)) {
+                        @Override
+                        public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
+                            super.visitLocalVariable(name.replaceAll("\u2603", "g"), desc, signature, start, end, index);
+                        }
+                    };
+                }
+            };
+
+            // Because fuck access modifiers that's why
+            output = new ClassVisitor(Opcodes.ASM5, output) {
+                @Override
+                public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+                    return super.visitField((access & ~(Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED)) | Opcodes.ACC_PUBLIC, name, desc, signature, value);
+                }
+
+                @Override
+                public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+                    return super.visitMethod((access & ~(Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED)) | Opcodes.ACC_PUBLIC, name, desc, signature, exceptions);
+                }
+            };
 
             reader.accept(output, ClassReader.EXPAND_FRAMES);
             return writer.toByteArray();

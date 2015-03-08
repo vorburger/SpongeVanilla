@@ -21,22 +21,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.granitepowered.granite.loader;
+package mc;
 
-import javassist.ClassPool;
-import javassist.NotFoundException;
+import org.spongepowered.api.entity.player.Player;
 
-import java.io.File;
+import java.util.List;
 
-public class MinecraftLoader {
+public class ServerConfigurationManager {
+    public List<Player> playerEntityList;
 
-    public static void createPool(File originalJarFile) {
-        // Create a class pool and add the original jar file
-        ClassPool pool = new ClassPool(true);
-        try {
-            pool.appendClassPath(originalJarFile.getPath());
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+    public int maxPlayers;
+
+    public boolean whiteListEnforced;
 }

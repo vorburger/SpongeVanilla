@@ -29,26 +29,11 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import javassist.ClassPool;
 import mc.Bootstrap;
+import mc.DedicatedServer;
 import org.granitepowered.granite.guice.GraniteGuiceModule;
-import org.granitepowered.granite.loader.DeobfuscatorTransformer;
-import org.granitepowered.granite.loader.GraniteTweaker;
-import org.granitepowered.granite.loader.Mappings;
-import org.granitepowered.granite.loader.MappingsLoader;
-import org.granitepowered.granite.loader.MinecraftLoader;
+import org.granitepowered.granite.loader.*;
 import org.slf4j.LoggerFactory;
-import org.spongepowered.api.text.action.GraniteTextActionFactory;
-import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.chat.ChatTypes;
-import org.spongepowered.api.text.chat.GraniteChatTypeFactory;
-import org.spongepowered.api.text.format.GraniteTextFormatFactory;
-import org.spongepowered.api.text.format.TextStyle;
-import org.spongepowered.api.text.format.TextStyles;
-import org.spongepowered.api.text.message.GraniteMessageFactory;
-import org.spongepowered.api.text.message.Messages;
-import org.spongepowered.api.text.title.GraniteTitleFactory;
-import org.spongepowered.api.text.title.Titles;
-import org.spongepowered.api.text.translation.GraniteTranslationFactory;
-import org.spongepowered.api.text.translation.Translations;
+import org.spongepowered.api.Server;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,7 +43,6 @@ import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -158,6 +142,12 @@ public class GraniteStartup {
             if (Objects.equals(day + month, "3112")) {
                 Granite.getInstance().getLogger().info("New Years Eve. Make way for " + Integer.toString(Integer.parseInt(year) + 1) + "!");
             }
+
+            Granite.instance.server = (Server) new DedicatedServer(new File("worlds/"));
+
+            // Start the server
+            // This will run on the same thread here
+            ((DedicatedServer) Granite.instance.server).startServer();
         } catch (Throwable t) {
             Granite.error("We did a REALLY BIG boo-boo :'(", t);
         }
@@ -166,7 +156,7 @@ public class GraniteStartup {
     private void injectSpongeFields() {
         Granite.getInstance().getLogger().info("Injecting Sponge fields");
 
-        injectConstant(Messages.class, "factory", new GraniteMessageFactory());
+        /*injectConstant(Messages.class, "factory", new GraniteMessageFactory());
         injectConstant(TextStyles.class, "factory", new GraniteTextFormatFactory());
         injectConstant(TextActions.class, "factory", new GraniteTextActionFactory());
         injectConstant(Translations.class, "factory", new GraniteTranslationFactory());
@@ -176,9 +166,9 @@ public class GraniteStartup {
         Map<String, TextStyle.Base> styles = new HashMap<>();
         for (Map.Entry<String, TextStyle.Base> entry : GraniteTextFormatFactory.styles.entrySet()) {
             styles.put(entry.getKey().toUpperCase(), entry.getValue());
-        }
+        }*/
 
-        injectConstants(TextStyles.class, styles);
+        //injectConstants(TextStyles.class, styles);
     }
 
     private void injectEnumConstants(Class<?> destination, Class<? extends Enum> source) {

@@ -21,23 +21,17 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.spongepowered.api.text.translation;
+package mc;
 
-import com.google.common.base.Optional;
-import org.granitepowered.granite.impl.text.translation.GraniteTranslation;
+import org.granitepowered.granite.mixin.server.MinecraftServer;
 
-import java.util.Objects;
+import java.io.File;
 
-public class GraniteTranslationFactory implements TranslationFactory {
+public class DedicatedServer extends MinecraftServer {
+    public DedicatedServer(File worlds) {
+    }
 
-    @Override
-    public Optional<Translation> getTranslationFromId(String id) {
-        GraniteTranslation translation = new GraniteTranslation(id);
-
-        if (!Objects.equals(translation.get(), id)) {
-            return Optional.<Translation>of(translation);
-        } else {
-            return Optional.absent();
-        }
+    public boolean startServer() {
+        return false;
     }
 }

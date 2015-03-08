@@ -21,22 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.granitepowered.granite.loader;
+package mc;
 
-import javassist.ClassPool;
-import javassist.NotFoundException;
-
-import java.io.File;
-
-public class MinecraftLoader {
-
-    public static void createPool(File originalJarFile) {
-        // Create a class pool and add the original jar file
-        ClassPool pool = new ClassPool(true);
-        try {
-            pool.appendClassPath(originalJarFile.getPath());
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+public class WorldServer {
 }

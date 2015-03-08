@@ -65,6 +65,12 @@ classes.entrySet().forEach {
 
                 pp = "(" + pms.join(",") + ")"
             }
+            classes.entrySet().forEach {
+                naem = it.value.asJsonObject.getAsJsonPrimitive("name").getAsString()
+                if (ret.equals(naem)) {
+                    ret = it.key
+                }
+            }
             pp = oname + pp + ":" + ret
             methods.remove(it.key)
             methods.add(pp, it.value)
@@ -80,8 +86,16 @@ classes.entrySet().forEach {
 
             cf = ctClass.getDeclaredField(obf)
 
+            t = cf.getType().getName()
+            classes.entrySet().forEach {
+                naem = it.value.asJsonObject.getAsJsonPrimitive("name").getAsString()
+                if (t.equals(naem)) {
+                    t = it.key
+                }
+            }
+
             fields.remove(it.key)
-            fields.add(obf + ":" + cf.getType().getName(), it.value)
+            fields.add(obf + ":" + t, it.value)
         }
     }
 }

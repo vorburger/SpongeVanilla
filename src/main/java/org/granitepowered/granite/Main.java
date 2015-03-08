@@ -33,6 +33,13 @@ public class Main {
         // Which starts the GraniteTweaker up
         // Which in turn calls GraniteStartup's Main, and init begins
 
+        if (ArrayUtils.contains(args, "debug")) {
+            System.setProperty("mixin.debug", "true");
+            System.setProperty("legacy.debugClassLoading", "true");
+            System.setProperty("legacy.debugClassLoadingFiner", "true");
+            System.setProperty("legacy.debugClassLoadingSave", "true");
+        }
+
         // Not using GraniteTweaker.class.getName() here, because classloaders
         net.minecraft.launchwrapper.Launch.main(ArrayUtils.addAll(args, "--tweakClass", "org.granitepowered.granite.loader.GraniteTweaker"));
     }

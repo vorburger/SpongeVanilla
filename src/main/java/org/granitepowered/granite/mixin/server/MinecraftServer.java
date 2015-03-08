@@ -21,27 +21,20 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.spongepowered.api.text.chat;
+package org.granitepowered.granite.mixin.server;
 
-import com.google.common.base.Optional;
-import org.granitepowered.granite.impl.text.chat.GraniteChatType;
+import mc.ServerConfigurationManager;
+import org.spongepowered.api.world.World;
 
-import java.util.Arrays;
-import java.util.List;
+public class MinecraftServer {
+    public World[] worldServers;
 
-public class GraniteChatTypeFactory implements ChatTypeFactory {
+    public ServerConfigurationManager serverConfigManager;
 
-    @Override
-    public Optional<ChatType> getTypeFromName(String name) {
-        try {
-            return Optional.<ChatType>of(GraniteChatType.valueOf(name));
-        } catch (IllegalArgumentException e) {
-            return Optional.absent();
-        }
-    }
+    public int tickCounter;
 
-    @Override
-    public List<ChatType> getTypes() {
-        return Arrays.<ChatType>asList(GraniteChatType.values());
+    public boolean onlineMode;
+
+    public void stopServer() {
     }
 }

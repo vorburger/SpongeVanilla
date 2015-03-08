@@ -21,14 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.spongepowered.api.text.title;
+package mc;
 
-import org.granitepowered.granite.impl.text.title.GraniteTitleBuilder;
-
-public class GraniteTitleFactory implements TitleFactory {
-
-    @Override
-    public TitleBuilder createTitleBuilder() {
-        return new GraniteTitleBuilder();
-    }
+public class EntityPlayerMP {
 }

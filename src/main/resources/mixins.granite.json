@@ -1,6 +1,8 @@
 {
   "package": "org.granitepowered.granite.mixin",
+  "required": true,
   "mixins": [
-    "entity.MixinEntity"
+    "entity.MixinEntity",
+    "server.MixinDedicatedServer"
   ]
 }
