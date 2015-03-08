@@ -29,31 +29,18 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import javassist.ClassPool;
 import mc.Bootstrap;
-import org.granitepowered.granite.impl.GraniteMinecraftVersion;
-import org.granitepowered.granite.impl.GraniteServer;
-import org.granitepowered.granite.impl.event.state.GraniteConstructionEvent;
-import org.granitepowered.granite.impl.event.state.GraniteInitializationEvent;
-import org.granitepowered.granite.impl.event.state.GraniteLoadCompleteEvent;
-import org.granitepowered.granite.impl.event.state.GranitePostInitializationEvent;
-import org.granitepowered.granite.impl.event.state.GranitePreInitializationEvent;
-import org.granitepowered.granite.impl.guice.GraniteGuiceModule;
-import org.granitepowered.granite.impl.text.chat.GraniteChatType;
-import org.granitepowered.granite.impl.text.format.GraniteTextColor;
+import org.granitepowered.granite.guice.GraniteGuiceModule;
 import org.granitepowered.granite.loader.DeobfuscatorTransformer;
 import org.granitepowered.granite.loader.GraniteTweaker;
 import org.granitepowered.granite.loader.Mappings;
 import org.granitepowered.granite.loader.MappingsLoader;
 import org.granitepowered.granite.loader.MinecraftLoader;
-import org.granitepowered.granite.util.ReflectionUtils;
 import org.slf4j.LoggerFactory;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.text.action.GraniteTextActionFactory;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.chat.GraniteChatTypeFactory;
 import org.spongepowered.api.text.format.GraniteTextFormatFactory;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyle;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.message.GraniteMessageFactory;
@@ -67,6 +54,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -126,11 +114,7 @@ public class GraniteStartup {
 
             Granite.getInstance().classPool = ClassPool.getDefault();
 
-            Granite.getInstance().eventManager.post(new GraniteConstructionEvent());
-
             Granite.getInstance().serverConfig = new ServerConfig();
-
-            Granite.getInstance().createGson();
 
             loadMinecraft();
 
@@ -142,18 +126,7 @@ public class GraniteStartup {
 
             bootstrap();
 
-            Granite.getInstance().gameRegistry.register();
-
             injectSpongeFields();
-
-            Granite.getInstance().pluginManager.loadPlugins();
-
-            Granite.getInstance().server = (GraniteServer) injector.getInstance(Game.class);
-
-            Granite.getInstance().eventManager.post(new GranitePreInitializationEvent());
-            Granite.getInstance().eventManager.post(new GraniteInitializationEvent());
-            Granite.getInstance().eventManager.post(new GranitePostInitializationEvent());
-            Granite.getInstance().eventManager.post(new GraniteLoadCompleteEvent());
 
             Date date = new Date();
             String day = new SimpleDateFormat("dd").format(date);
@@ -200,17 +173,12 @@ public class GraniteStartup {
         injectConstant(ChatTypes.class, "factory", new GraniteChatTypeFactory());
         injectConstant(Titles.class, "factory", new GraniteTitleFactory());
 
-        injectEnumConstants(TextColors.class, GraniteTextColor.class);
-
         Map<String, TextStyle.Base> styles = new HashMap<>();
         for (Map.Entry<String, TextStyle.Base> entry : GraniteTextFormatFactory.styles.entrySet()) {
             styles.put(entry.getKey().toUpperCase(), entry.getValue());
         }
 
         injectConstants(TextStyles.class, styles);
-        injectEnumConstants(ChatTypes.class, GraniteChatType.class);
-
-        injectConstants(ParticleTypes.class, Granite.getInstance().getGameRegistry().particleTypes);
     }
 
     private void injectEnumConstants(Class<?> destination, Class<? extends Enum> source) {
@@ -228,7 +196,15 @@ public class GraniteStartup {
     private void injectConstant(Class<?> clazz, String name, Object value) {
         try {
             Field f = clazz.getDeclaredField(name);
-            ReflectionUtils.forceAccessible(f);
+            try {
+                f.setAccessible(true);
+
+                Field modifiersField = Field.class.getDeclaredField("modifiers");
+                modifiersField.setAccessible(true);
+                modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                Throwables.propagate(e);
+            }
 
             f.set(null, value);
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -243,9 +219,9 @@ public class GraniteStartup {
     }
 
     private void downloadMappings(File mappingsFile, String url, HttpRequest req) {
-        Granite.getInstance().getLogger().warn("Downloading from " + url);
+        Granite.getInstance().getLogger().warn("Downloading mappings from " + url);
         if (req.code() == 404) {
-            //throw new RuntimeException("GitHub 404 error whilst trying to download");
+            throw new RuntimeException("GitHub 404 error whilst trying to download mappings");
         } else if (req.code() == 200) {
             req.receive(mappingsFile);
             Granite.getInstance().getServerConfig().set("latest-mappings-etag", req.eTag());
@@ -255,7 +231,7 @@ public class GraniteStartup {
 
     private void loadMappings() {
         File mappingsFile = new File(Granite.getInstance().getServerConfig().getMappingsFile().getAbsolutePath());
-        String url = "https://raw.githubusercontent.com/GraniteTeam/GraniteMappings/sponge/1.8.3.json";
+        String url = "https://raw.githubusercontent.com/GraniteTeam/GraniteMappings/mixin/1.8.3.json";
         try {
             HttpRequest req = HttpRequest.get(url);
 
@@ -302,7 +278,6 @@ public class GraniteStartup {
         }
 
         String minecraftVersion = minecraftJar.getName().replace("minecraft_server.", "Minecraft ").replace(".jar", "");
-        Granite.getInstance().minecraftVersion = new GraniteMinecraftVersion(minecraftVersion, 47);
 
         MinecraftLoader.createPool(minecraftJar);
         try {

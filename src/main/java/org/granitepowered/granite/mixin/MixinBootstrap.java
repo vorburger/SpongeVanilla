@@ -23,10 +23,11 @@
 
 package org.granitepowered.granite.mixin;
 
-import mc.Bootstrap;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin(Bootstrap.class)
+@NonnullByDefault
+@Mixin(mc.Bootstrap.class)
 public class MixinBootstrap {
 
     public static void register() {

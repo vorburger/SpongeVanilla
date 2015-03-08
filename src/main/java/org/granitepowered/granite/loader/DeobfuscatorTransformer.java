@@ -82,6 +82,10 @@ public class DeobfuscatorTransformer implements IClassTransformer, IClassNameTra
 
     @Override
     public byte[] transform(String name, final String transformedName, byte[] basicClass) {
+        if (basicClass == null) {
+            return basicClass;
+        }
+
         // If mappings are loaded and initted
         if (mappings != null) {
             ClassReader reader = new ClassReader(basicClass);

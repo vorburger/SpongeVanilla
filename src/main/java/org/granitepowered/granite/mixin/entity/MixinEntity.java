@@ -31,6 +31,7 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntitySnapshot;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.util.RelativePositions;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -39,6 +40,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
+@NonnullByDefault
 @Mixin(value = mc.Entity.class, remap = false)
 public abstract class MixinEntity implements Entity {
 
@@ -101,9 +105,6 @@ public abstract class MixinEntity implements Entity {
 
     @Shadow
     public mc.Entity ridingEntity;
-
-    /*@Shadow
-    public abstract void shadow$setPositionAndUpdate(double x, double y, double z);*/
 
     @Shadow
     public abstract void mountEntity(mc.Entity entity);
@@ -177,7 +178,7 @@ public abstract class MixinEntity implements Entity {
     }
 
     @Override
-    public boolean setPassenger(Entity entity) {
+    public boolean setPassenger(@Nullable Entity entity) {
         if (this.ridingEntity == null) {
             if (entity == null) {
                 return true;
@@ -195,7 +196,7 @@ public abstract class MixinEntity implements Entity {
     }
 
     @Override
-    public boolean setVehicle(Entity entity) {
+    public boolean setVehicle(@Nullable Entity entity) {
         mountEntity((mc.Entity) entity);
         return true;
     }
