@@ -23,5 +23,5 @@
 
 package mc;
 
-public class EntityPlayerMP {
+public class EntityPlayerMP extends EntityPlayer {
 }
