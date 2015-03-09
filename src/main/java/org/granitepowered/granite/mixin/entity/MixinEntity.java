@@ -45,66 +45,47 @@ import javax.annotation.Nullable;
 @NonnullByDefault
 @Mixin(value = mc.Entity.class, remap = false)
 public abstract class MixinEntity implements Entity {
-
+    @Shadow
+    public mc.World worldObj;
+    @Shadow
+    public double posX;
+    @Shadow
+    public double posY;
+    @Shadow
+    public double posZ;
+    @Shadow
+    public double motionX;
+    @Shadow
+    public double motionY;
+    @Shadow
+    public double motionZ;
+    @Shadow
+    public float rotationYaw;
+    @Shadow
+    public float rotationPitch;
+    @Shadow
+    public float width;
+    @Shadow
+    public float height;
+    @Shadow
+    public boolean isDead;
+    @Shadow
+    public boolean onGround;
+    @Shadow
+    public int fireResistance;
+    @Shadow
+    public mc.Entity riddenByEntity;
+    @Shadow
+    public mc.Entity ridingEntity;
+    @Shadow
+    protected UUID entityUniqueID;
     private EntityType entityType;
     private boolean teleporting;
     private Entity teleportVehicle;
     private float originalWidth;
     private float originalHeight;
-
-    @Shadow
-    public UUID entityUniqueID;
-
-    @Shadow
-    public mc.World worldObj;
-
-    @Shadow
-    public double posX;
-
-    @Shadow
-    public double posY;
-
-    @Shadow
-    public double posZ;
-
-    @Shadow
-    public double motionX;
-
-    @Shadow
-    public double motionY;
-
-    @Shadow
-    public double motionZ;
-
-    @Shadow
-    public float rotationYaw;
-
-    @Shadow
-    public float rotationPitch;
-
-    @Shadow
-    public float width;
-
-    @Shadow
-    public float height;
-
-    @Shadow
-    public boolean isDead;
-
-    @Shadow
-    public boolean onGround;
-
-    @Shadow
-    public int fireResistance;
-
     @Shadow
     private int fire;
-
-    @Shadow
-    public mc.Entity riddenByEntity;
-
-    @Shadow
-    public mc.Entity ridingEntity;
 
     @Shadow
     public abstract void mountEntity(mc.Entity entity);

@@ -56,8 +56,6 @@ public class Granite implements Game {
     CommandService commandService;
     ServiceManager serviceManager;
     Scheduler scheduler;
-
-    // Not injected directly; initialization is done after classes are rewritten
     Server server;
     String version;
     String apiVersion;
@@ -87,20 +85,20 @@ public class Granite implements Game {
         return instance;
     }
 
-    public Logger getLogger() {
-        return this.logger;
-    }
-
-    public ServerConfig getServerConfig() {
-        return this.serverConfig;
-    }
-
     public static void error(Throwable t) {
         error("We did a boo-boo :'(", t);
     }
 
     public static void error(String message, Throwable t) {
         getInstance().logger.error(message, t);
+    }
+
+    public Logger getLogger() {
+        return this.logger;
+    }
+
+    public ServerConfig getServerConfig() {
+        return this.serverConfig;
     }
 
     @Override

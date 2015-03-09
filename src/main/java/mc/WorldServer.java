@@ -23,5 +23,5 @@
 
 package mc;
 
-public class WorldServer {
+public class WorldServer extends World {
 }
