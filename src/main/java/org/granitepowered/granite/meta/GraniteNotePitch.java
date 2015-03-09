@@ -1,4 +1,4 @@
-package org.granitepowered.granite.mixin.block.meta;
+package org.granitepowered.granite.meta;
 
 import org.spongepowered.api.block.meta.NotePitch;
 import org.spongepowered.api.util.annotation.NonnullByDefault;

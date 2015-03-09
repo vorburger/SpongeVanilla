@@ -4,7 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import org.granitepowered.granite.Granite;
 import org.granitepowered.granite.GraniteEventManager;
-import org.granitepowered.granite.mixin.registry.GraniteGameRegistry;
+import org.granitepowered.granite.registry.GraniteGameRegistry;
 import org.granitepowered.granite.GranitePluginManager;
 import org.granitepowered.granite.GraniteScheduler;
 import org.spongepowered.api.Game;

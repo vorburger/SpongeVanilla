@@ -1,4 +1,4 @@
-package org.granitepowered.granite.mixin.block.meta;
+package org.granitepowered.granite.meta;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.spongepowered.api.block.data.Banner;

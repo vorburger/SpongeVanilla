@@ -1,4 +1,4 @@
-package org.granitepowered.granite.mixin.effect.particle;
+package org.granitepowered.granite.particle;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -7,7 +7,6 @@ import com.flowpowered.math.vector.Vector3f;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleEffectBuilder;
 import org.spongepowered.api.effect.particle.ParticleType;
-import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.util.annotation.NonnullByDefault;

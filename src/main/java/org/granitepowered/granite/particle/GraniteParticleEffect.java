@@ -1,7 +1,6 @@
-package org.granitepowered.granite.mixin.effect.particle;
+package org.granitepowered.granite.particle;
 
 import com.flowpowered.math.vector.Vector3f;
-import org.granitepowered.granite.mixin.block.meta.GranitePatternLayer;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleType;
 import org.spongepowered.api.item.inventory.ItemStack;
