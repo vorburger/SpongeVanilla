@@ -53,7 +53,7 @@ public abstract class MixinEntity implements Entity {
     private float originalHeight;
 
     @Shadow
-    protected UUID entityUniqueID;
+    public UUID entityUniqueID;
 
     @Shadow
     public mc.World worldObj;
@@ -109,6 +109,9 @@ public abstract class MixinEntity implements Entity {
     @Shadow
     public abstract void mountEntity(mc.Entity entity);
 
+    @Shadow
+    public abstract void setLocationAndAngles(double x, double y, double z, float yaw, float pitch);
+
     @Override
     public World getWorld() {
         return (World) this.worldObj;
@@ -121,14 +124,18 @@ public abstract class MixinEntity implements Entity {
 
     @Override
     public boolean setLocation(Location location) {
-        // TODO: setLocation
-        throw new NotImplementedException("");
+        // TODO: move between worlds
+        setLocationAndAngles(location.getPosition().getX(), location.getPosition().getY(), location.getPosition().getZ(), rotationYaw, rotationPitch);
+        return true;
     }
 
     @Override
     public boolean setLocationAndRotation(Location location, Vector3f vector3f, EnumSet<RelativePositions> enumSet) {
-        // TODO: setLocationAndRotation
-        throw new NotImplementedException("");
+        // TODO: move between worlds
+        // The vector3f passed is {yaw, pitch, roll}
+        // Entities don't have roll, so that's ignored
+        setLocationAndAngles(location.getPosition().getX(), location.getPosition().getY(), location.getPosition().getZ(), vector3f.getX(), vector3f.getY());
+        return true;
     }
 
     @Override
