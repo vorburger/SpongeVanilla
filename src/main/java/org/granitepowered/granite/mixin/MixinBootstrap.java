@@ -27,7 +27,7 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.asm.mixin.Mixin;
 
 @NonnullByDefault
-@Mixin(mc.Bootstrap.class)
+@Mixin(value = mc.Bootstrap.class, remap = false)
 public class MixinBootstrap {
 
     public static void register() {

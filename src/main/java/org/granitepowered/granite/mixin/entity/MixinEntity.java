@@ -202,12 +202,12 @@ public abstract class MixinEntity implements Entity {
     @Override
     public float getScale() {
         if (this.originalWidth == 0 || this.originalHeight == 0) {
-             this.originalWidth = this.width;
-             this.originalHeight = this.height;
-         }
-         double scaleWidth = this.width / this.originalWidth;
-         double scaleHeight = this.height / this.originalHeight;
-         return (float) (scaleHeight + scaleWidth) / 2;
+            this.originalWidth = this.width;
+            this.originalHeight = this.height;
+        }
+        double scaleWidth = this.width / this.originalWidth;
+        double scaleHeight = this.height / this.originalHeight;
+        return (float) (scaleHeight + scaleWidth) / 2;
     }
 
     @Override

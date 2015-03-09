@@ -10,6 +10,7 @@ import org.spongepowered.api.text.message.Message;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.gen.WorldGenerator;
+import org.spongepowered.asm.mixin.Mixin;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @NonnullByDefault
+@Mixin(value = mc.World.class, remap = false)
 public class MixinServer implements Server {
 
     @Override

@@ -153,19 +153,11 @@ public class Granite implements Game {
 
     @Override
     public String getImplementationVersion() {
-        throw new NotImplementedException("");
+        return this.version;
     }
 
     @Override
     public MinecraftVersion getMinecraftVersion() {
         return this.minecraftVersion;
-    }
-
-    public GameRegistry getGameRegistry() {
-        return gameRegistry;
-    }
-
-    public String getVersion() {
-        return version;
     }
 }

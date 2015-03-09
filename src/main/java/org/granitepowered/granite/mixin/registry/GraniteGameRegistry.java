@@ -1,4 +1,4 @@
-package org.granitepowered.granite;
+package org.granitepowered.granite.mixin.registry;
 
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.NotImplementedException;
