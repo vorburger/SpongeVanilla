@@ -186,7 +186,7 @@
     </profiles>
 
     <build>
-        <defaultGoal>clean install -U</defaultGoal>
+        <defaultGoal>clean install</defaultGoal>
         <finalName>${finalName}</finalName>
 
         <resources>
