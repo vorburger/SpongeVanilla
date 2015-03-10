@@ -21,15 +21,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.granitepowered.granite.mixin;
+package mc;
 
-import org.spongepowered.api.util.annotation.NonnullByDefault;
-import org.spongepowered.asm.mixin.Mixin;
+public interface IBlockState {
+    IBlockState withProperty(IProperty property, Comparable value);
 
-@NonnullByDefault
-@Mixin(value = mc.Bootstrap.class, remap = false)
-public class MixinBootstrap {
+    IBlockState cycleProperty(IProperty property);
 
-    public static void register() {
-    }
+    Comparable getValue(IProperty property);
 }
