@@ -2,7 +2,11 @@
   "package": "org.granitepowered.granite.mixin",
   "required": true,
   "mixins": [
+    "block.MixinBlock",
+    "block.MixinPropertyHelper",
+    "block.MixinStateImplementation",
     "entity.MixinEntity",
+    "entity.player.MixinEntityPlayerMP",
     "server.MixinDedicatedServer"
   ]
 }

@@ -23,6 +23,5 @@
 
 package mc;
 
-public class Block {
-    public static RegistryNamespaced blockRegistry;
+public class BlockFalling extends Block {
 }

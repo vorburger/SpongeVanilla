@@ -36,7 +36,6 @@ public class Main {
         if (ArrayUtils.contains(args, "debug")) {
             System.setProperty("mixin.debug", "true");
             System.setProperty("legacy.debugClassLoading", "true");
-            System.setProperty("legacy.debugClassLoadingFiner", "true");
             System.setProperty("legacy.debugClassLoadingSave", "true");
         }
 

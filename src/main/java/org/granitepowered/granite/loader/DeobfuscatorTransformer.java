@@ -124,6 +124,7 @@ public class DeobfuscatorTransformer implements IClassTransformer, IClassNameTra
             };
 
             // Because fuck access modifiers that's why
+            // Make ALL the things public!
             output = new ClassVisitor(Opcodes.ASM5, output) {
                 @Override
                 public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {

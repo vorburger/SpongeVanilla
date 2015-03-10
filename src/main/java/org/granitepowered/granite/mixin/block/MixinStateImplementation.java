@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.granitepowered.granite.mixin.entity.block;
+package org.granitepowered.granite.mixin.block;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;

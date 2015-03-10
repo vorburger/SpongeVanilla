@@ -21,8 +21,44 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package mc;
+package org.granitepowered.granite.mixin.block;
 
-public class Block {
-    public static RegistryNamespaced blockRegistry;
+import com.google.common.base.Optional;
+import mc.IProperty;
+import mc.PropertyHelper;
+import org.spongepowered.api.block.BlockProperty;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+
+import java.util.Collection;
+
+@Mixin(value = PropertyHelper.class, remap = false)
+public abstract class MixinPropertyHelper implements BlockProperty, IProperty {
+    @Shadow
+    private String name;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public Collection getValidValues() {
+        return getAllowedValues();
+    }
+
+    @Override
+    public String getNameForValue(Comparable comparable) {
+        return getName(comparable);
+    }
+
+    @Override
+    public Optional getValueForName(String s) {
+        for (Object comparable : getValidValues()) {
+            if (getNameForValue((Comparable) comparable).equals(s)) {
+                return Optional.of(comparable);
+            }
+        }
+        return Optional.absent();
+    }
 }
