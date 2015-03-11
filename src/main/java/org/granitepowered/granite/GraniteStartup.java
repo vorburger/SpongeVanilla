@@ -146,7 +146,7 @@ public class GraniteStartup {
                 Granite.getInstance().getLogger().info("New Years Eve. Make way for " + Integer.toString(Integer.parseInt(year) + 1) + "!");
             }
 
-            Granite.instance.server = (Server) new DedicatedServer(new File("worldServers/"));
+            Granite.instance.server = (Server) new DedicatedServer(new File("worlds/"));
 
             // Start the server
             Thread t = new Thread((MinecraftServer) Granite.instance.server);
