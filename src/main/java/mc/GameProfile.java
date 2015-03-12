@@ -21,24 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.granitepowered.granite;
+package mc;
 
-import org.apache.commons.lang3.ArrayUtils;
-
-public class Main {
-
-    public static void main(String[] args) {
-        // The startup process is a little complicated
-        // Granite's Main calls LaunchWrapper's Main
-        // Which starts the GraniteTweaker up
-        // Which in turn calls GraniteStartup's Main, and init begins
-
-        if (ArrayUtils.contains(args, "debug")) {
-            System.setProperty("mixin.debug", "true");
-            System.setProperty("legacy.debugClassLoadingSave", "true");
-        }
-
-        // Not using GraniteTweaker.class.getName() here, because classloaders
-        net.minecraft.launchwrapper.Launch.main(ArrayUtils.addAll(args, "--tweakClass", "org.granitepowered.granite.loader.GraniteTweaker"));
-    }
+public class GameProfile {
+    public String name;
 }

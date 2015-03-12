@@ -44,7 +44,7 @@ import javax.annotation.Nullable;
 
 @NonnullByDefault
 @Mixin(value = mc.Entity.class, remap = false)
-public abstract class MixinEntity implements Entity {
+public class MixinEntity implements Entity {
     @Shadow
     public mc.World worldObj;
     @Shadow
@@ -88,10 +88,12 @@ public abstract class MixinEntity implements Entity {
     private int fire;
 
     @Shadow
-    public abstract void mountEntity(mc.Entity entity);
+    public void mountEntity(mc.Entity entity) {
+    }
 
     @Shadow
-    public abstract void setLocationAndAngles(double x, double y, double z, float yaw, float pitch);
+    public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
+    }
 
     @Override
     public World getWorld() {

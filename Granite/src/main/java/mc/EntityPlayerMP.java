@@ -24,4 +24,7 @@
 package mc;
 
 public class EntityPlayerMP extends EntityPlayer {
+    public EntityPlayerMP(World worldIn, GameProfile gameprofile) {
+        super(worldIn, gameprofile);
+    }
 }

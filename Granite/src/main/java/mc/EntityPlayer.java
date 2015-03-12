@@ -24,4 +24,8 @@
 package mc;
 
 public class EntityPlayer extends EntityLivingBase {
+    public GameProfile gameProfile;
+    public EntityPlayer(World worldIn, GameProfile gameprofile) {
+
+    }
 }

@@ -23,10 +23,289 @@
 
 package org.granitepowered.granite.mixin.entity.player;
 
+import com.flowpowered.math.vector.Vector3d;
+import com.google.common.base.Optional;
 import mc.EntityPlayer;
 import mc.EntityPlayerMP;
+import mc.NetHandlerPlayServer;
+import mc.World;
+import org.apache.commons.lang3.NotImplementedException;
+import org.granitepowered.granite.Granite;
+import org.spongepowered.api.GameProfile;
+import org.spongepowered.api.effect.particle.ParticleEffect;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.net.PlayerConnection;
+import org.spongepowered.api.service.ServiceReference;
+import org.spongepowered.api.service.permission.PermissionService;
+import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.service.permission.SubjectCollection;
+import org.spongepowered.api.service.permission.SubjectData;
+import org.spongepowered.api.service.permission.context.Context;
+import org.spongepowered.api.text.chat.ChatType;
+import org.spongepowered.api.text.chat.ChatTypes;
+import org.spongepowered.api.text.message.Message;
+import org.spongepowered.api.text.title.Title;
+import org.spongepowered.api.util.Tristate;
+import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 @Mixin(value = EntityPlayerMP.class, remap = false)
-public class MixinEntityPlayerMP extends EntityPlayer {
+@Implements(@Interface(iface = Player.class, prefix = "playermp$"))
+public abstract class MixinEntityPlayerMP extends EntityPlayer implements CommandSource {
+    @Shadow
+    private String translator;
+
+    @Shadow
+    public NetHandlerPlayServer playerNetServerHandler;
+
+    @Shadow
+    public boolean canCommandSenderUseCommand(int permissionLevel, String command) {
+        return false;
+    }
+
+    private ServiceReference<PermissionService> permService =
+            Granite.getInstance().getServiceManager().potentiallyProvide(PermissionService.class);
+
+    private Subject thisSubject = null;
+
+    public Message displayName;
+
+    public MixinEntityPlayerMP(World worldIn, mc.GameProfile gameprofile) {
+        super(worldIn, gameprofile);
+    }
+
+    public GameProfile playermp$getProfile() {
+        return (GameProfile) gameProfile;
+    }
+
+    public String playermp$getName() {
+        return gameProfile.name;
+    }
+
+    public boolean playermp$isOnline() {
+        return true;
+    }
+
+    public Optional<Player> playermp$getPlayer() {
+        return Optional.of((Player) this);
+    }
+
+    public Message playermp$getDisplayName() {
+        return displayName;
+    }
+
+    public Locale playermp$getLocale() {
+        return new Locale(this.translator);
+    }
+
+    public void playermp$sendMessage(String... messages) {
+        playermp$sendMessage(ChatTypes.CHAT, messages);
+    }
+
+    public void playermp$sendMessage(Message... messages) {
+        playermp$sendMessage(ChatTypes.CHAT, messages);
+    }
+
+    public void playermp$sendMessage(Iterable<Message> messages) {
+        playermp$sendMessage(ChatTypes.CHAT, messages);
+    }
+
+    public void playermp$sendMessage(ChatType type, String... messages) {
+        /*for (String string : messages) {
+            ChatComponentTranslation component = new ChatComponentTranslation(string);
+            this.playerNetServerHandler.sendPacket(new S02PacketChat(component, ((SpongeChatType) type).getId()));
+        }*/
+        // TODO: Message API
+        throw new NotImplementedException("");
+    }
+
+    public void playermp$sendMessage(ChatType type, Message... messages) {
+        /*for (Message message : messages) {
+            this.playerNetServerHandler.sendPacket(new S02PacketChat(((SpongeMessage<?>) message).getHandle(), ((SpongeChatType) type).getId()));
+        }*/
+        // TODO: Message API
+        throw new NotImplementedException("");
+    }
+
+    public void playermp$sendMessage(ChatType type, Iterable<Message> messages) {
+        /*for (Message message : messages) {
+            this.playerNetServerHandler.sendPacket(new S02PacketChat(((SpongeMessage<?>) message).getHandle(), ((SpongeChatType) type).getId()));
+        }*/
+        // TODO: Message API
+        throw new NotImplementedException("");
+    }
+
+    public void playermp$sendTitle(Title title) {
+        /*SpongeTitle spongeTitle = (SpongeTitle) title;
+
+        for (S45PacketTitle packet : spongeTitle.getPackets()) {
+            this.playerNetServerHandler.sendPacket(packet);
+        }*/
+        // TODO: Title API
+        throw new NotImplementedException("");
+    }
+
+    public void playermp$resetTitle() {
+        /*SpongeTitle title = new SpongeTitle(false, true, Optional.<Message>absent(), Optional.<Message>absent(),
+                Optional.<Integer>absent(), Optional.<Integer>absent(), Optional.<Integer>absent());
+        for (S45PacketTitle packet : title.getPackets()) {
+            this.playerNetServerHandler.sendPacket(packet);
+        }*/
+        // TODO: Title API
+        throw new NotImplementedException("");
+    }
+
+    public void playermp$clearTitle() {
+        /*SpongeTitle title = new SpongeTitle(true, false, Optional.<Message>absent(), Optional.<Message>absent(),
+                Optional.<Integer>absent(), Optional.<Integer>absent(), Optional.<Integer>absent());
+        for (S45PacketTitle packet : title.getPackets()) {
+            this.playerNetServerHandler.sendPacket(packet);
+        }*/
+        // TODO: Title API
+        throw new NotImplementedException("");
+    }
+
+    public void playermp$spawnParticles(ParticleEffect particleEffect, Vector3d position) {
+        this.playermp$spawnParticles(particleEffect, position, Integer.MAX_VALUE);
+    }
+
+    public void playermp$spawnParticles(ParticleEffect particleEffect, Vector3d position, int radius) {
+        /*checkNotNull(particleEffect, "The particle effect cannot be null!");
+        checkNotNull(position, "The position cannot be null");
+        checkArgument(radius > 0, "The radius has to be greater then zero!");
+
+        List<Packet> packets = SpongeParticleHelper.toPackets((SpongeParticleEffect) particleEffect, position);
+
+        if (!packets.isEmpty()) {
+            double dx = this.posX - position.getX();
+            double dy = this.posY - position.getY();
+            double dz = this.posZ - position.getZ();
+
+            if (dx * dx + dy * dy + dz * dz < radius * radius) {
+                for (Packet packet : packets) {
+                    this.playerNetServerHandler.sendPacket(packet);
+                }
+            }
+        }*/
+        // TODO: Particle API
+        throw new NotImplementedException("");
+    }
+
+    public PlayerConnection playermp$getConnection() {
+        return (PlayerConnection) this.playerNetServerHandler;
+    }
+
+    private Subject internalSubject() {
+        if (this.thisSubject == null) {
+            Optional<PermissionService> service = this.permService.ref();
+            if (service.isPresent()) {
+                SubjectCollection userSubjects = service.get().getUserSubjects();
+                if (userSubjects != null) {
+                    return this.thisSubject = userSubjects.get(entityUniqueID.toString());
+                }
+            }
+        }
+        return this.thisSubject;
+    }
+
+    @Override
+    public String getIdentifier() {
+        Subject subj = internalSubject();
+        return subj == null ? entityUniqueID.toString() : subj.getIdentifier();
+    }
+
+    @Override
+    public Optional<CommandSource> getCommandSource() {
+        return Optional.<CommandSource>of(this);
+    }
+
+    @Override
+    public SubjectCollection getContainingCollection() {
+        Subject subj = internalSubject();
+        if (subj == null) {
+            throw new IllegalStateException("No subject present for player " + this);
+        } else {
+            return subj.getContainingCollection();
+        }
+    }
+
+    @Override
+    public SubjectData getData() {
+        Subject subj = internalSubject();
+        if (subj == null) {
+            throw new IllegalStateException("No subject present for player " + this);
+        } else {
+            return subj.getData();
+        }
+    }
+
+    @Override
+    public SubjectData getTransientData() {
+        Subject subj = internalSubject();
+        if (subj == null) {
+            throw new IllegalStateException("No subject present for player " + this);
+        } else {
+            return subj.getTransientData();
+        }
+    }
+
+    @Override
+    public boolean hasPermission(Set<Context> contexts, String permission) {
+        Subject subj = internalSubject();
+        return subj == null ? permDefault(permission) : subj.hasPermission(contexts, permission);
+    }
+
+    private boolean permDefault(String permission) {
+        return canCommandSenderUseCommand(4, permission);
+    }
+
+    @Override
+    public boolean hasPermission(String permission) {
+        Subject subj = internalSubject();
+        return subj == null ? permDefault(permission) : subj.hasPermission(permission);
+    }
+
+    @Override
+    public Tristate getPermissionValue(Set<Context> contexts, String permission) {
+        Subject subj = internalSubject();
+        return subj == null ? Tristate.UNDEFINED : subj.getPermissionValue(contexts, permission);
+    }
+
+    @Override
+    public boolean isChildOf(Subject parent) {
+        Subject subj = internalSubject();
+        return subj == null ? false : subj.isChildOf(parent);
+    }
+
+    @Override
+    public boolean isChildOf(Set<Context> contexts, Subject parent) {
+        Subject subj = internalSubject();
+        return subj == null ? false : subj.isChildOf(contexts, parent);
+    }
+
+    @Override
+    public List<Subject> getParents() {
+        Subject subj = internalSubject();
+        return subj == null ? Collections.<Subject>emptyList() : subj.getParents();
+    }
+
+    @Override
+    public List<Subject> getParents(Set<Context> contexts) {
+        Subject subj = internalSubject();
+        return subj == null ? Collections.<Subject>emptyList() : subj.getParents(contexts);
+    }
+
+    @Override
+    public Set<Context> getActiveContexts() {
+        Subject subj = internalSubject();
+        return subj == null ? Collections.<Context>emptySet() : subj.getActiveContexts();
+    }
 }

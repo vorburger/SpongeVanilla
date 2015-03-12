@@ -23,6 +23,8 @@
 
 package mc;
 
-public class Entity {
+import java.util.UUID;
 
+public class Entity {
+    public UUID entityUniqueID;
 }
