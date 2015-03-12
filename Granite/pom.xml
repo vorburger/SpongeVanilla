@@ -82,6 +82,8 @@
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
             <version>${api.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../SpongeAPI/build/libs/spongeapi-${api.version}.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -172,6 +174,18 @@
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
             <version>5.0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ninja.leaping.configurate</groupId>
+            <artifactId>configurate-hocon</artifactId>
+            <version>0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.flowpowered</groupId>
+            <artifactId>flow-math</artifactId>
+	    <version>1.0.0</version>
         </dependency>
     </dependencies>
 
