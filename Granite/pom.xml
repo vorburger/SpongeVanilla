@@ -185,7 +185,13 @@
         <dependency>
             <groupId>com.flowpowered</groupId>
             <artifactId>flow-math</artifactId>
-	    <version>1.0.0</version>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 
@@ -262,6 +268,7 @@
                                     <include>ninja.leaping.configurate:configurate-hocon</include>
                                     <include>io.netty:netty-all</include>
                                     <include>net.java.dev.jna:jna</include>
+                                    <include>net.minecraft:launchwrapper</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
