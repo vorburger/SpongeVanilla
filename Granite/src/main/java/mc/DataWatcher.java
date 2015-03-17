@@ -23,31 +23,15 @@
 
 package mc;
 
-import java.util.UUID;
-
-public class Entity {
-    public UUID entityUniqueID;
-
-    public int hurtResistantTime;
-
-    public DataWatcher dataWatcher;
-
-    public Entity(World worldIn) {
-
+public class DataWatcher {
+    public WatchableObject getWatchedObject(int id) {
+        return null;
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        return false;
+    public void updateObject(int id, Object obj) {
     }
 
-    protected boolean getFlag(int flag) {
-        return false;
-    }
-
-    public void setFlag(int i, boolean invisible) {
-    }
-
-    public float getEyeHeight() {
-        return 0;
+    public static class WatchableObject {
+        public Object watchedObject;
     }
 }

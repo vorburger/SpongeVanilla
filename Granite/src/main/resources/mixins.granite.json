@@ -6,6 +6,8 @@
     "block.MixinPropertyHelper",
     "block.MixinStateImplementation",
     "entity.MixinEntity",
+    "entity.living.MixinEntityLivingBase",
+    "entity.player.MixinEntityPlayer",
     "entity.player.MixinEntityPlayerMP",
     "server.MixinDedicatedServer"
   ]

@@ -23,31 +23,14 @@
 
 package mc;
 
-import java.util.UUID;
+public class DamageSource {
+    public static DamageSource generic;
 
-public class Entity {
-    public UUID entityUniqueID;
-
-    public int hurtResistantTime;
-
-    public DataWatcher dataWatcher;
-
-    public Entity(World worldIn) {
-
+    public static DamageSource causePlayerDamage(EntityPlayerMP thisEntity) {
+        return null;
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        return false;
-    }
-
-    protected boolean getFlag(int flag) {
-        return false;
-    }
-
-    public void setFlag(int i, boolean invisible) {
-    }
-
-    public float getEyeHeight() {
-        return 0;
+    public static DamageSource causeMobDamage(EntityLivingBase thisEntity) {
+        return null;
     }
 }

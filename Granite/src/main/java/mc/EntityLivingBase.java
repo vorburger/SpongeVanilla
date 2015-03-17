@@ -24,4 +24,11 @@
 package mc;
 
 public class EntityLivingBase extends Entity {
+    public EntityLivingBase(World worldIn) {
+        super(worldIn);
+    }
+
+    public void onDeath(DamageSource cause) {
+
+    }
 }

@@ -37,10 +37,9 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.UUID;
-
-import javax.annotation.Nullable;
 
 @NonnullByDefault
 @Mixin(value = mc.Entity.class, remap = false)
