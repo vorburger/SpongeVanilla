@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.block.BlockBreakEvent;
+import org.spongepowered.api.event.block.BlockChangeEvent;
 import org.spongepowered.api.event.state.ConstructionEvent;
 import org.spongepowered.api.event.state.InitializationEvent;
 import org.spongepowered.api.event.state.LoadCompleteEvent;
@@ -102,7 +103,7 @@ public final class Granite implements PluginContainer {
                 this.game.getServiceManager().setProvider(this, CommandService.class, commandService);
                 this.game.getEventManager().register(this, commandService);
             } catch (ProviderExistsException e) {
-                this.logger.warn("An unknofwn CommandService was already registered", e);
+                this.logger.warn("An unknown CommandService was already registered", e);
             }
 
             if (Files.notExists(this.gameDir) || Files.notExists(this.pluginsDir)) {
@@ -114,7 +115,6 @@ public final class Granite implements PluginContainer {
             postState(ConstructionEvent.class);
             getLogger().info("Initializing plugins...");
             postState(PreInitializationEvent.class);
-            this.game.getEventManager().register(this, this);
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
@@ -151,10 +151,4 @@ public final class Granite implements PluginContainer {
     public Object getInstance() {
         return this;
     }
-
-    @Subscribe
-    public void onBlockBreakEvent(BlockBreakEvent event) {
-        event.setCancelled(true);
-    }
-
 }

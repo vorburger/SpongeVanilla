@@ -76,6 +76,7 @@ public class GraniteHooks {
         }
 
         // Post the block break event
+        // TODO Cause/Reason
         BlockBreakEvent event = SpongeEventFactory.createBlockBreak(Granite.instance.getGame(), new Cause(null, pos, null), new BlockWrapper((org
                 .spongepowered.api.world.World) world, pos), new GraniteBlockSnapshot(world, pos), 0);
         event.setCancelled(preCancelEvent);

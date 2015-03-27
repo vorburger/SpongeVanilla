@@ -48,12 +48,9 @@ public abstract class MixinItemInWorldManager {
     @Shadow
     public EntityPlayerMP thisPlayerMP;
 
-    @Shadow
-    private BlockPos field_180240_f;
-
     @Inject(method = "tryHarvestBlock", at = @At("HEAD"), cancellable = true)
     public void onTryHarvestBlock(BlockPos pos, CallbackInfoReturnable<Boolean> ci) {
-        if (GraniteHooks.onBlockBreakEvent(theWorld, gameType, thisPlayerMP, field_180240_f).isCancelled()) {
+        if (GraniteHooks.onBlockBreakEvent(theWorld, gameType, thisPlayerMP, pos).isCancelled()) {
             ci.setReturnValue(false);
         }
     }

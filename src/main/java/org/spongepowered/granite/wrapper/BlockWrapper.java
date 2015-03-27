@@ -59,7 +59,7 @@ public class BlockWrapper implements BlockLoc {
         // This is a NOT check, be careful of that
         if (!(world instanceof net.minecraft.world.World)) {
             System.err.println("World passed to BlockWrapper wasn't a mixin for net.minecraft.world.World! Serious issue!");
-            throw new RuntimeException("An unrecoverable error occured!");
+            throw new RuntimeException("An unrecoverable error occurred!");
         }
         this.handle = (net.minecraft.world.World) world;
         this.extent = world;
