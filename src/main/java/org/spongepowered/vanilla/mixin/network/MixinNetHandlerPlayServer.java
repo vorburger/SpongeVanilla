@@ -24,6 +24,7 @@
  */
 package org.spongepowered.vanilla.mixin.network;
 
+import com.google.common.collect.Sets;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
@@ -41,7 +42,10 @@ import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.entity.player.PlayerChatEvent;
+import org.spongepowered.api.event.entity.player.PlayerDropItemEvent;
 import org.spongepowered.api.event.entity.player.PlayerQuitEvent;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStackBuilder;
 import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -51,6 +55,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.common.Sponge;
 import org.spongepowered.common.registry.SpongeGameRegistry;
 import org.spongepowered.common.text.SpongeTexts;
@@ -157,6 +162,30 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
             this.playerEntity.theItemInWorldManager
                     .tryUseItem(this.playerEntity, this.serverController.worldServerForDimension(this.playerEntity.dimension),
                             this.playerEntity.inventory.getCurrentItem());
+        }
+    }
+
+    @Inject(method = "processPlayerDigging", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/entity/player/EntityPlayerMP;dropOneItem(Z)Lnet/minecraft/entity/item/EntityItem;"), cancellable = true)
+    public void injectDropItemWithQButton(C07PacketPlayerDigging packetIn, CallbackInfo ci) {
+        boolean dropWholeStack = packetIn.getStatus() == C07PacketPlayerDigging.Action.DROP_ALL_ITEMS;
+
+        net.minecraft.item.ItemStack droppedItem = this.playerEntity.getCurrentEquippedItem().copy();
+        if (!dropWholeStack) {
+            droppedItem.stackSize = 1;
+        }
+
+        PlayerDropItemEvent event = SpongeEventFactory.createPlayerDropItem(Sponge.getGame(), (Player) this.playerEntity, null,
+                                                                   Sets.newHashSet((ItemStack) droppedItem));
+        if (Sponge.getGame().getEventManager().post(event)) {
+            // Even if the event is cancelled, we will remove the item from the player's inventory
+            // This is how the Forge implementation of the event works, so we must mirror it here
+            // TODO: this is a stupid detail, remove this line?
+            this.playerEntity.inventory.decrStackSize(this.playerEntity.inventory.currentItem,
+                                                                 dropWholeStack && this.playerEntity.inventory.getCurrentItem() != null ? this.playerEntity.inventory
+                                                                         .getCurrentItem().stackSize : 1);
+
+            ci.cancel();
         }
     }
 }
