@@ -71,6 +71,10 @@ public abstract class MixinServerConfigurationManager {
         ((Server) this.mcServer).broadcastMessage(event.getJoinMessage());
     }
 
+    // TODO: This player entity recreation will likely be removed at some point
+    // TODO: Make sure this event is accounted for when that happens
+    // TODO: See the clonePlayer() mixin in MixinEntityPlayer, this will need to be reworked
+
     @Redirect(method = "recreatePlayerEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayerMP;clonePlayer(Lnet/minecraft/entity/player/EntityPlayer;Z)V"))
     public void recreatePlayerEntityPlayerGrab(EntityPlayerMP this$0, EntityPlayer old, boolean end) {
         // This redirect is purely to grab hold of the new player (this$0) for use below
