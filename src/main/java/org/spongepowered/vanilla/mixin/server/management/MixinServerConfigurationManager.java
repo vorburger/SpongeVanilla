@@ -30,6 +30,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.event.SpongeEventFactory;
@@ -53,8 +54,8 @@ public abstract class MixinServerConfigurationManager {
     @Shadow private MinecraftServer mcServer;
     @Nullable private IChatComponent joinMessage;
 
-    private EntityPlayerMP tmpPlayer;
-    private boolean tmpBed;
+    private EntityPlayerMP newPlayer;
+    private boolean isBedSpawn;
 
     @Redirect(method = "initializeConnectionToPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/management/ServerConfigurationManager;sendChatMsg(Lnet/minecraft/util/IChatComponent;)V"))
     public void initializeConnectionToPlayerRedirectSendChatMsg(ServerConfigurationManager this$0, IChatComponent component) {
@@ -75,22 +76,24 @@ public abstract class MixinServerConfigurationManager {
     // TODO: Make sure this event is accounted for when that happens
     // TODO: See the clonePlayer() mixin in MixinEntityPlayer, this will need to be reworked
 
+    // TODO: We also need to take care of cross-world teleportation, saving that for when world changes are in
+
     @Redirect(method = "recreatePlayerEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayerMP;clonePlayer(Lnet/minecraft/entity/player/EntityPlayer;Z)V"))
-    public void recreatePlayerEntityPlayerGrab(EntityPlayerMP this$0, EntityPlayer old, boolean end) {
+    public void recreatePlayerEntityPlayerGrab(EntityPlayerMP this$0, EntityPlayer oldPlayer, boolean respawnFromEnd) {
         // This redirect is purely to grab hold of the new player (this$0) for use below
-        tmpPlayer = this$0;
-        tmpBed = false;
+        newPlayer = this$0;
+        isBedSpawn = false;
     }
 
     @Inject(method = "recreatePlayerEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayerMP;setSpawnPoint(Lnet/minecraft/util/BlockPos;Z)V"))
-    public void recreatePlayerEntityBedCheck(EntityPlayerMP playerIn, int dimension, boolean conqueredEnd, CallbackInfoReturnable ci) {
-        tmpBed = true;
+    public void recreatePlayerEntityBedCheck(EntityPlayerMP playerIn, int dimension, boolean conqueredEnd, CallbackInfo ci) {
+        isBedSpawn = true;
     }
 
     @Inject(method = "recreatePlayerEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/ChunkProviderServer;loadChunk(II)Lnet/minecraft/world/chunk/Chunk;"))
-    public void recreatePlayerEntity(EntityPlayerMP playerIn, int dimension, boolean conqueredEnd, CallbackInfoReturnable ci) {
-        PlayerRespawnEvent event = SpongeEventFactory.createPlayerRespawn(Sponge.getGame(), (Player) tmpPlayer, tmpBed, ((Player) tmpPlayer).getLocation());
+    public void recreatePlayerEntity(EntityPlayerMP playerIn, int dimension, boolean conqueredEnd, CallbackInfoReturnable<Chunk> ci) {
+        PlayerRespawnEvent event = SpongeEventFactory.createPlayerRespawn(Sponge.getGame(), (Player) newPlayer, isBedSpawn, ((Player) newPlayer).getLocation());
         Sponge.getGame().getEventManager().post(event);
-        ((Player) tmpPlayer).setLocation(event.getRespawnLocation());
+        ((Player) newPlayer).setLocation(event.getRespawnLocation());
     }
 }

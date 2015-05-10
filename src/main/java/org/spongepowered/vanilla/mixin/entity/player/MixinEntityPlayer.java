@@ -90,8 +90,8 @@ public abstract class MixinEntityPlayer extends EntityLivingBase {
 
     // Move lastEvent field from the old EntityPlayer to the new (this) one
     @Inject(method = "clonePlayer", at = @At(value = "HEAD"))
-    public void clonePlayerHeadHandler(EntityPlayer old, boolean whatever, CallbackInfo ci) {
-        ((IMixinEntityPlayerMP) this).setLastDeathEvent(((IMixinEntityPlayerMP) old).getLastDeathEvent());
+    public void clonePlayerHeadHandler(EntityPlayer oldPlayer, boolean respawnFromEnd, CallbackInfo ci) {
+        ((IMixinEntityPlayerMP) this).setLastDeathEvent(((IMixinEntityPlayerMP) oldPlayer).getLastDeathEvent());
     }
 
     // Completely cancel the copying over of params if keepInventory (game rule) is enabled, we'll do that manually below
