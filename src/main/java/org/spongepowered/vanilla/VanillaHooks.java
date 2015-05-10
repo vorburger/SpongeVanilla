@@ -128,16 +128,15 @@ public final class VanillaHooks {
         final Collection<DataManipulator<?>> prevManipulators = ((org.spongepowered.api.item.inventory.ItemStack)stack).getManipulators();
         ((IBlockSnapshotContainer) world).captureBlockSnapshots(true);
         boolean success = stack.getItem().onItemUse(stack, player, world, pos, side, hitX, hitY, hitZ);
-        Sponge.getLogger().info(success);
         ((IBlockSnapshotContainer) world).captureBlockSnapshots(false);
         final List<BlockSnapshot> copiedSnapshots = (ArrayList<BlockSnapshot>) ((IBlockSnapshotContainer) world).getCapturedSnapshots().clone();
+        ((IBlockSnapshotContainer) world).getCapturedSnapshots().clear();
         // If item use is successful, process player block placement
         if (success) {
             //TODO Copy over old data for itemstack for event
             final int newStackSize = stack.stackSize;
             final Collection<DataManipulator<?>> newManipulators = ((org.spongepowered.api.item.inventory.ItemStack) stack).getManipulators();
             final PlayerPlaceBlockEvent event = SpongeEventFactory.createPlayerPlaceBlock(Sponge.getGame(), new Cause(null, player, null), (Player) player, new Location((Extent) world, VecHelper.toVector(pos)), copiedSnapshots.get(0), SpongeGameRegistry.directionMap.inverse().get(side));
-            Sponge.getLogger().error(event.toString());
             success = !Sponge.getGame().getEventManager().post(event);
             if (!success) {
                 for (BlockSnapshot snapshot : copiedSnapshots) {

@@ -102,7 +102,7 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
         }
     }
 
-    @Inject(method = "setBlockState", at = @At(value = "RETURN", ordinal = 3), locals = LocalCapture.PRINT)
+    @Inject(method = "setBlockState", at = @At(value = "RETURN", ordinal = 3))
     public void purgeSnapshotIfNeeded(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> ci) {
         if (injectCacheSnapshot != null) {
             this.capturedSnapshots.remove(injectCacheSnapshot);
