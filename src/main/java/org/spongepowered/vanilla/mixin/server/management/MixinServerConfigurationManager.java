@@ -71,20 +71,6 @@ public abstract class MixinServerConfigurationManager {
         ((Server) this.mcServer).broadcastMessage(event.getJoinMessage());
     }
 
-    /**
-     * Invoke before <code>return entityplayermp1;</code> (line 513 of source) to fire {@link org.spongepowered.api.event.entity.player.PlayerRespawnEvent}.
-     * @param playerIn Injected player param
-     * @param dimension Injected dimension param
-     * @param conqueredEnd Injected conquered end flag
-     * @param ci Info to provide mixin on how to handle the callback
-     */
-    @Inject(method = "recreatePlayerEntity", at = @At("RETURN"))
-    public void onRecreatePlayerEntityEnd(EntityPlayerMP playerIn, int dimension, boolean conqueredEnd, CallbackInfoReturnable<EntityPlayerMP> ci) {
-        final PlayerRespawnEvent event = SpongeEventFactory.createPlayerRespawn(Sponge.getGame(), (Player) playerIn, playerIn.getBedLocation() != null, ((Player) playerIn).getLocation());
-        Sponge.getGame().getEventManager().post(event);
-        ((Player) playerIn).setLocation(event.getRespawnLocation());
-    }
-
     @Redirect(method = "recreatePlayerEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayerMP;clonePlayer(Lnet/minecraft/entity/player/EntityPlayer;Z)V"))
     public void recreatePlayerEntityPlayerGrab(EntityPlayerMP this$0, EntityPlayer old, boolean end) {
         // This redirect is purely to grab hold of the new player (this$0) for use below
