@@ -72,7 +72,7 @@ public abstract class MixinItemInWorldManager {
 
     @Inject(method = "tryHarvestBlock", at = @At("HEAD"), cancellable = true)
     public void onTryHarvestBlock(BlockPos pos, CallbackInfoReturnable<Boolean> ci) {
-        if (VanillaHooks.preparePlayerBreakBlockEvent(this.theWorld, this.gameType, this.thisPlayerMP, pos, clickedFace).isCancelled()) {
+        if (VanillaHooks.callPlayerBreakBlockEvent(this.theWorld, this.gameType, this.thisPlayerMP, pos, clickedFace).isCancelled()) {
             ci.setReturnValue(false);
         }
         clickedFace = null;

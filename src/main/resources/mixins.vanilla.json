@@ -10,6 +10,7 @@
         "entity.player.MixinEntityPlayer",
         "entity.vehicle.MixinEntityMinecart",
         "item.MixinEnchantment",
+        "item.MixinItemStack",
         "network.MixinNetHandlerPlayServer",
         "server.management.MixinItemInWorldManager",
         "server.management.MixinServerConfigurationManager",

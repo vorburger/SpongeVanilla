@@ -24,13 +24,17 @@
  */
 package org.spongepowered.vanilla.mixin.world;
 
+import com.google.common.collect.Lists;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.profiler.Profiler;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
+import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,15 +48,21 @@ import org.spongepowered.common.Sponge;
 import org.spongepowered.common.configuration.SpongeConfig;
 import org.spongepowered.common.interfaces.IMixinWorld;
 import org.spongepowered.common.world.border.PlayerBorderListener;
+import org.spongepowered.vanilla.block.VanillaBlockSnapshot;
+import org.spongepowered.vanilla.interfaces.IBlockSnapshotContainer;
 
 import java.io.File;
+import java.util.ArrayList;
 
 @Mixin(World.class)
-public abstract class MixinWorld implements org.spongepowered.api.world.World, IMixinWorld {
+public abstract class MixinWorld implements org.spongepowered.api.world.World, IMixinWorld, IBlockSnapshotContainer {
 
     public SpongeConfig<SpongeConfig.WorldConfig> worldConfig;
 
     @Shadow private net.minecraft.world.border.WorldBorder worldBorder;
+    private boolean captureSnapshots;
+    private final ArrayList<BlockSnapshot> capturedSnapshots = Lists.newArrayList();
+    private BlockSnapshot injectCacheSnapshot;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void onConstructed(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client,
@@ -83,4 +93,34 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
         this.onSpawnEntityInWorld(entity, cir, i, j, flag);
     }
 
+    @Inject(method = "setBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;setBlockState(Lnet/minecraft/util/BlockPos;Lnet/minecraft/block/state/IBlockState;)Lnet/minecraft/block/state/IBlockState;"))
+    public void createAndStoreBlockSnapshot(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> ci) {
+        this.injectCacheSnapshot = null;
+        if (this.captureSnapshots) {
+            this.injectCacheSnapshot = new VanillaBlockSnapshot((World) (Object) this, pos);
+            this.capturedSnapshots.add(this.injectCacheSnapshot);
+        }
+    }
+
+    @Inject(method = "setBlockState", at = @At(value = "RETURN", ordinal = 3), locals = LocalCapture.PRINT)
+    public void purgeSnapshotIfNeeded(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> ci) {
+        if (injectCacheSnapshot != null) {
+            this.capturedSnapshots.remove(injectCacheSnapshot);
+        }
+    }
+
+    @Override
+    public boolean isCapturingBlockSnapshots() {
+        return captureSnapshots;
+    }
+
+    @Override
+    public void captureBlockSnapshots(boolean captureSnapshots) {
+        this.captureSnapshots = captureSnapshots;
+    }
+
+    @Override
+    public ArrayList<BlockSnapshot> getCapturedSnapshots() {
+        return capturedSnapshots;
+    }
 }

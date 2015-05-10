@@ -143,6 +143,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
     public void injectBeforeItemStackCheck(C08PacketPlayerBlockPlacement packetIn, CallbackInfo ci) {
         final MovingObjectPosition objectPosition = EntityUtils.rayTraceFromEntity(this.playerEntity, 4, 1);
         if (objectPosition != null && objectPosition.entityHit == null) {
+            //TODO Need to rollback the itemstack in hand if cancelled. See issue #162
             this.isRightClickAirCancelled = Sponge.getGame().getEventManager().post(SpongeEventFactory.createPlayerInteract(Sponge.getGame(),
                     (Player) this.playerEntity, EntityInteractionTypes.USE, null));
         }
