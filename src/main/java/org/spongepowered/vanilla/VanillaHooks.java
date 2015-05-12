@@ -126,8 +126,10 @@ public final class VanillaHooks {
     }
 
     public static boolean callPlayerPlaceBlockEvent(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
+        // Store current itemstack state
         final org.spongepowered.api.item.inventory.ItemStack snapshotStack = Sponge.getGame().getRegistry().getItemBuilder().fromItemStack((org.spongepowered.api.item.inventory.ItemStack) stack).build();
         ((IBlockSnapshotContainer) world).captureBlockSnapshots(true);
+        // Perform item use
         boolean success = stack.getItem().onItemUse(stack, player, world, pos, side, hitX, hitY, hitZ);
         ((IBlockSnapshotContainer) world).captureBlockSnapshots(false);
         final List<BlockSnapshot> copiedSnapshots = (ArrayList<BlockSnapshot>) ((IBlockSnapshotContainer) world).getCapturedSnapshots().clone();

@@ -122,6 +122,11 @@ public final class VanillaBlockSnapshot implements BlockSnapshot {
         this.vecPos = location;
     }
 
+    @Override
+    public BlockSnapshot copy() {
+        return null;
+    }
+
     @Nullable
     public World getWorld() {
         World world = this.worldRef.get();
