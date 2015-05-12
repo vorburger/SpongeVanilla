@@ -60,7 +60,8 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
     public SpongeConfig<SpongeConfig.WorldConfig> worldConfig;
 
     @Shadow private net.minecraft.world.border.WorldBorder worldBorder;
-    private boolean captureSnapshots;
+    @Shadow private boolean isRemote;
+    private boolean captureSnapshots, restoreSnapshots;
     private final ArrayList<BlockSnapshot> capturedSnapshots = Lists.newArrayList();
     private BlockSnapshot injectCacheSnapshot;
 
@@ -75,6 +76,14 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
                         "sponge");
 
         this.worldBorder.addListener(new PlayerBorderListener());
+    }
+
+    @Inject(method = "spawnEntityInWorld", at = @At("HEAD"))
+    public void cancelEntitySpawnIfCapturingSnapshots(Entity entity, CallbackInfoReturnable<Boolean> ci) {
+        if (!this.isRemote && (entity == null || (entity instanceof net.minecraft.entity.item.EntityItem && this.restoreSnapshots))) {
+            ci.setReturnValue(false);
+        }
+
     }
 
     @Inject(method = "spawnEntityInWorld", locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true,
@@ -97,7 +106,7 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
     public void createAndStoreBlockSnapshot(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> ci) {
         this.injectCacheSnapshot = null;
         if (this.captureSnapshots) {
-            this.injectCacheSnapshot = new VanillaBlockSnapshot((World) (Object) this, pos);
+            this.injectCacheSnapshot = new VanillaBlockSnapshot((World) (Object) this, pos, ((World) (Object) this).getBlockState(pos));
             this.capturedSnapshots.add(this.injectCacheSnapshot);
         }
     }
@@ -115,8 +124,18 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
     }
 
     @Override
+    public boolean isRestoringBlockSnapshots() {
+        return restoreSnapshots;
+    }
+
+    @Override
     public void captureBlockSnapshots(boolean captureSnapshots) {
         this.captureSnapshots = captureSnapshots;
+    }
+
+    @Override
+    public void restoreBlockSnapshots(boolean restoreSnapshots) {
+        this.restoreSnapshots = restoreSnapshots;
     }
 
     @Override

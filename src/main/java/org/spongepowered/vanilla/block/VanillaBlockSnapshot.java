@@ -92,6 +92,16 @@ public final class VanillaBlockSnapshot implements BlockSnapshot {
         return (BlockState) this.blockState;
     }
 
+    @Nullable
+    public BlockState getCurrentState() {
+        final World world = getWorld();
+        BlockState state = null;
+        if (world != null) {
+            state = (BlockState) world.getBlockState(this.pos);
+        }
+        return state;
+    }
+
     @Override
     public void setBlockState(BlockState blockState) {
         this.blockState = (IBlockState) blockState;
@@ -100,6 +110,10 @@ public final class VanillaBlockSnapshot implements BlockSnapshot {
     @Override
     public Vector3i getLocation() {
         return this.vecPos;
+    }
+
+    public BlockPos getPos() {
+        return this.pos;
     }
 
     @Override
