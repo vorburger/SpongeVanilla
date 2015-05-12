@@ -40,9 +40,10 @@ import org.spongepowered.common.Sponge;
 import org.spongepowered.common.service.persistence.NbtTranslator;
 import org.spongepowered.common.util.VecHelper;
 
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 public final class VanillaBlockSnapshot implements BlockSnapshot {
     public static final int UPDATE_CLIENT_WITH_PHYSICS = 3;
@@ -200,7 +201,7 @@ public final class VanillaBlockSnapshot implements BlockSnapshot {
         if (snapshotState.getBlock() != currentState.getBlock() || snapshotState.getBlock().getMetaFromState(snapshotState)
                 != currentState.getBlock().getMetaFromState(currentState)) {
             if (force) {
-                world.setBlockState(pos, currentState, updateFlag);
+                world.setBlockState(pos, snapshotState, updateFlag);
                 world.markBlockForUpdate(pos);
             } else {
                 return false;
@@ -241,11 +242,11 @@ public final class VanillaBlockSnapshot implements BlockSnapshot {
     @Override
     public String toString() {
         return "VanillaBlockSnapshot{" +
-                "worldUUID=" + worldUUID +
-                ", data=" + data +
-                ", pos=" + pos +
-                ", blockState=" + blockState +
-                ", updateFlag=" + updateFlag +
+                "worldUUID=" + this.worldUUID +
+                ", data=" + this.data +
+                ", pos=" + this.pos +
+                ", blockState=" + this.blockState +
+                ", updateFlag=" + this.updateFlag +
                 '}';
     }
 }

@@ -102,30 +102,30 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
         this.onSpawnEntityInWorld(entity, cir, i, j, flag);
     }
 
-//    @Inject(method = "setBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;setBlockState(Lnet/minecraft/util/BlockPos;Lnet/minecraft/block/state/IBlockState;)Lnet/minecraft/block/state/IBlockState;"))
-//    public void createAndStoreBlockSnapshot(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> ci) {
-//        this.injectCacheSnapshot = null;
-//        if (this.captureSnapshots) {
-//            this.injectCacheSnapshot = new VanillaBlockSnapshot((World) (Object) this, pos, ((World) (Object) this).getBlockState(pos));
-//            this.capturedSnapshots.add(this.injectCacheSnapshot);
-//        }
-//    }
-
-    @Inject(method = "setBlockState", at = @At(value = "RETURN", ordinal = 3))
-    public void purgeSnapshotIfNeeded(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> ci) {
-        if (injectCacheSnapshot != null) {
-            this.capturedSnapshots.remove(injectCacheSnapshot);
+    @Inject(method = "setBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;setBlockState(Lnet/minecraft/util/BlockPos;Lnet/minecraft/block/state/IBlockState;)Lnet/minecraft/block/state/IBlockState;"))
+    public void createAndStoreBlockSnapshot(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> ci) {
+        this.injectCacheSnapshot = null;
+        if (this.captureSnapshots) {
+            this.injectCacheSnapshot = new VanillaBlockSnapshot((World) (Object) this, pos, ((World) (Object) this).getBlockState(pos));
+            this.capturedSnapshots.add(this.injectCacheSnapshot);
         }
     }
 
+//    @Inject(method = "setBlockState", at = @At(value = "RETURN", ordinal = 3))
+//    public void purgeSnapshotIfNeeded(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> ci) {
+//        if (this.injectCacheSnapshot != null) {
+//            this.capturedSnapshots.remove(this.injectCacheSnapshot);
+//        }
+//    }
+
     @Override
     public boolean isCapturingBlockSnapshots() {
-        return captureSnapshots;
+        return this.captureSnapshots;
     }
 
     @Override
     public boolean isRestoringBlockSnapshots() {
-        return restoreSnapshots;
+        return this.restoreSnapshots;
     }
 
     @Override
@@ -140,6 +140,6 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
 
     @Override
     public ArrayList<BlockSnapshot> getCapturedSnapshots() {
-        return capturedSnapshots;
+        return this.capturedSnapshots;
     }
 }

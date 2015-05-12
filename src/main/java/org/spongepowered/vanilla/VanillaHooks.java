@@ -42,7 +42,6 @@ import net.minecraft.world.WorldSettings;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.data.DataManipulator;
-import org.spongepowered.api.data.manipulators.items.DurabilityData;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.block.BlockBreakEvent;
@@ -127,7 +126,8 @@ public final class VanillaHooks {
 
     public static boolean callPlayerPlaceBlockEvent(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
         // Store current itemstack state
-        final org.spongepowered.api.item.inventory.ItemStack snapshotStack = Sponge.getGame().getRegistry().getItemBuilder().fromItemStack((org.spongepowered.api.item.inventory.ItemStack) stack).build();
+        final org.spongepowered.api.item.inventory.ItemStack snapshotStack = Sponge.getGame().getRegistry().getItemBuilder().fromItemStack(
+                (org.spongepowered.api.item.inventory.ItemStack) stack).build();
         ((IBlockSnapshotContainer) world).captureBlockSnapshots(true);
         // Perform item use
         boolean success = stack.getItem().onItemUse(stack, player, world, pos, side, hitX, hitY, hitZ);
@@ -140,9 +140,12 @@ public final class VanillaHooks {
             final org.spongepowered.api.item.inventory.ItemStack useItemStack = Sponge.getGame().getRegistry().getItemBuilder().fromItemStack((org.spongepowered.api.item.inventory.ItemStack) stack).build();
             // Set the stack back to the pre item use for event
             copyStack(stack, (ItemStack) snapshotStack);
-            final PlayerPlaceBlockEvent event = SpongeEventFactory.createPlayerPlaceBlock(Sponge.getGame(), new Cause(null, player, null), (Player) player, new Location((Extent) world, VecHelper.toVector(pos)), copiedSnapshots.get(0), SpongeGameRegistry.directionMap.inverse().get(side));
-            success = !Sponge.getGame().getEventManager().post(event);
-            if (!success) {
+            final PlayerPlaceBlockEvent event = SpongeEventFactory.createPlayerPlaceBlock(Sponge.getGame(), new Cause(null, player, null),
+                    (Player) player, new Location((Extent) world, VecHelper.toVector(pos)), copiedSnapshots.get(0),
+                    SpongeGameRegistry.directionMap.inverse().get(side));
+            // Rollback if cancelled
+            if (Sponge.getGame().getEventManager().post(event)) {
+                success = false;
                 for (BlockSnapshot snapshot : copiedSnapshots) {
                     ((IBlockSnapshotContainer) world).restoreBlockSnapshots(true);
                     ((VanillaBlockSnapshot) snapshot).apply(true, VanillaBlockSnapshot.UPDATE_CLIENT);
