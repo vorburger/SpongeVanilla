@@ -24,7 +24,8 @@
  */
 package org.spongepowered.vanilla.mixin.world;
 
-import com.google.common.collect.Lists;
+import com.flowpowered.math.vector.Vector3i;
+import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -49,12 +50,13 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import org.spongepowered.common.Sponge;
 import org.spongepowered.common.configuration.SpongeConfig;
 import org.spongepowered.common.interfaces.IMixinWorld;
+import org.spongepowered.common.util.VecHelper;
 import org.spongepowered.common.world.border.PlayerBorderListener;
 import org.spongepowered.vanilla.block.VanillaBlockSnapshot;
 import org.spongepowered.vanilla.interfaces.IBlockSnapshotContainer;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Map;
 
 @Mixin(World.class)
 public abstract class MixinWorld implements org.spongepowered.api.world.World, IMixinWorld, IBlockSnapshotContainer {
@@ -67,7 +69,7 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
     @Shadow abstract void notifyNeighborsRespectDebug(BlockPos pos, Block block);
     @Shadow abstract void updateComparatorOutputLevel(BlockPos pos, Block block);
     private boolean captureSnapshots, restoreSnapshots;
-    private final ArrayList<BlockSnapshot> capturedSnapshots = Lists.newArrayList();
+    private final Map<Vector3i, BlockSnapshot> capturedSnapshots = Maps.newHashMap();
     private BlockSnapshot injectCacheSnapshot;
 
     @Inject(method = "<init>", at = @At("RETURN"))
@@ -99,7 +101,7 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
         this.onSpawnEntityInWorld(entity, cir, i, j, flag);
     }
 
-    @Inject(method = "spawnEntityInWorld", at = @At("HEAD"))
+    @Inject(method = "spawnEntityInWorld", at = @At("HEAD"), cancellable = true)
     public void cancelEntitySpawnIfCapturingSnapshots(Entity entity, CallbackInfoReturnable<Boolean> ci) {
         if (!this.isRemote && (entity == null || (entity instanceof net.minecraft.entity.item.EntityItem && this.restoreSnapshots))) {
             ci.setReturnValue(false);
@@ -110,15 +112,17 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
     public void createAndStoreBlockSnapshot(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> ci) {
         this.injectCacheSnapshot = null;
         if (this.captureSnapshots) {
-            this.injectCacheSnapshot = new VanillaBlockSnapshot((World) (Object) this, pos, ((World) (Object) this).getBlockState(pos));
-            this.capturedSnapshots.add(this.injectCacheSnapshot);
+            if (!this.capturedSnapshots.containsKey(VecHelper.toVector(pos))) {
+                this.injectCacheSnapshot = new VanillaBlockSnapshot((World) (Object) this, pos, ((World) (Object) this).getBlockState(pos), flags);
+                this.capturedSnapshots.put(this.injectCacheSnapshot.getLocation(), this.injectCacheSnapshot);
+            }
         }
     }
 
     @Inject(method = "setBlockState", at = @At(value = "RETURN", ordinal = 2))
     public void removeBlockSnapshotIfNullType(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> ci) {
         if (this.injectCacheSnapshot != null){
-            this.capturedSnapshots.remove(this.injectCacheSnapshot);
+            this.capturedSnapshots.remove(this.injectCacheSnapshot.getLocation());
         }
     }
 
@@ -152,7 +156,7 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
     }
 
     @Override
-    public ArrayList<BlockSnapshot> getCapturedSnapshots() {
+    public Map<Vector3i, BlockSnapshot> getCapturedSnapshots() {
         return this.capturedSnapshots;
     }
 

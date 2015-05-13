@@ -24,6 +24,8 @@
  */
 package org.spongepowered.vanilla;
 
+import com.flowpowered.math.vector.Vector3i;
+import com.google.common.collect.Maps;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -56,9 +58,8 @@ import org.spongepowered.common.util.VecHelper;
 import org.spongepowered.vanilla.block.VanillaBlockSnapshot;
 import org.spongepowered.vanilla.interfaces.IBlockSnapshotContainer;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
 public final class VanillaHooks {
 
@@ -132,7 +133,13 @@ public final class VanillaHooks {
         // Perform item use
         boolean success = stack.getItem().onItemUse(stack, player, world, pos, side, hitX, hitY, hitZ);
         ((IBlockSnapshotContainer) world).captureBlockSnapshots(false);
-        final List<BlockSnapshot> copiedSnapshots = (ArrayList<BlockSnapshot>) ((IBlockSnapshotContainer) world).getCapturedSnapshots().clone();
+
+        final Map<Vector3i, BlockSnapshot> copiedSnapshots = Maps.newHashMap();
+        for (Map.Entry<Vector3i, BlockSnapshot> entry : ((IBlockSnapshotContainer) world).getCapturedSnapshots().entrySet()) {
+            final VanillaBlockSnapshot old = (VanillaBlockSnapshot) entry.getValue();
+            copiedSnapshots.put(new Vector3i(entry.getKey().getX(), entry.getKey().getY(), entry.getKey().getZ()), new VanillaBlockSnapshot(old
+                    .getWorld(), old.getPos(), (IBlockState) old.getState(), old.getUpdateFlag()));
+        }
         ((IBlockSnapshotContainer) world).getCapturedSnapshots().clear();
         // If item use is successful, process player block placement
         if (success) {
@@ -140,32 +147,38 @@ public final class VanillaHooks {
             final org.spongepowered.api.item.inventory.ItemStack useItemStack = Sponge.getGame().getRegistry().getItemBuilder().fromItemStack((org.spongepowered.api.item.inventory.ItemStack) stack).build();
             // Set the stack back to the pre item use for event
             copyStack(stack, (ItemStack) snapshotStack);
-            final PlayerPlaceBlockEvent event = SpongeEventFactory.createPlayerPlaceBlock(Sponge.getGame(), new Cause(null, player, null),
-                    (Player) player, new Location((Extent) world, VecHelper.toVector(pos)), copiedSnapshots.get(0),
-                    SpongeGameRegistry.directionMap.inverse().get(side));
-            // Rollback if cancelled
-            if (Sponge.getGame().getEventManager().post(event)) {
-                success = false;
-                for (BlockSnapshot snapshot : copiedSnapshots) {
-                    ((IBlockSnapshotContainer) world).restoreBlockSnapshots(true);
-                    ((VanillaBlockSnapshot) snapshot).apply(true, VanillaBlockSnapshot.UPDATE_CLIENT);
-                    ((IBlockSnapshotContainer) world).restoreBlockSnapshots(false);
-                }
-            } else {
-                // Set itemstack to new content
-                copyStack(stack, (ItemStack) useItemStack);
-                for (BlockSnapshot snapshot : copiedSnapshots) {
-                    final VanillaBlockSnapshot vSnapshot = (VanillaBlockSnapshot) snapshot;
-                    final BlockState snapState = vSnapshot.getState();
-                    final BlockState currentState = vSnapshot.getCurrentState();
-                    if (currentState != null && !((IBlockState) currentState).getBlock().hasTileEntity()) {
-                        ((IBlockState) currentState).getBlock().onBlockAdded(world, vSnapshot.getPos(), ((IBlockState) currentState));
+            try {
+                final BlockSnapshot test = copiedSnapshots.get(VecHelper.toVector(world.getBlockState(pos).getBlock().isReplaceable(world, pos) ?
+                        pos.up() : pos.offset(side)));
+                final PlayerPlaceBlockEvent event = SpongeEventFactory.createPlayerPlaceBlock(Sponge.getGame(), new Cause(null, player, null),
+                        (Player) player, new Location((Extent) world, VecHelper.toVector(pos)), test, SpongeGameRegistry.directionMap.inverse().get(side));
+                // Rollback if cancelled
+                if (Sponge.getGame().getEventManager().post(event)) {
+                    success = false;
+                    for (BlockSnapshot snapshot : copiedSnapshots.values()) {
+                        ((IBlockSnapshotContainer) world).restoreBlockSnapshots(true);
+                        System.out.println("Applying -> " + snapshot);
+                        ((VanillaBlockSnapshot) snapshot).apply(true, VanillaBlockSnapshot.UPDATE_CLIENT);
+                        ((IBlockSnapshotContainer) world).restoreBlockSnapshots(false);
                     }
+                } else {
+                    // Set itemstack to new content
+                    copyStack(stack, (ItemStack) useItemStack);
+                    for (BlockSnapshot snapshot : copiedSnapshots.values()) {
+                        final VanillaBlockSnapshot vSnapshot = (VanillaBlockSnapshot) snapshot;
+                        final BlockState snapState = vSnapshot.getState();
+                        final BlockState currentState = vSnapshot.getCurrentState();
+                        if (currentState != null && !((IBlockState) currentState).getBlock().hasTileEntity()) {
+                            ((IBlockState) currentState).getBlock().onBlockAdded(world, vSnapshot.getPos(), ((IBlockState) currentState));
+                        }
 
-                    ((IBlockSnapshotContainer) world).markAndNotifyBlock(vSnapshot.getPos(), null, (IBlockState) snapState, (IBlockState)
-                                    currentState, vSnapshot.getUpdateFlag());
+                        ((IBlockSnapshotContainer) world).markAndNotifyBlock(vSnapshot.getPos(), null, (IBlockState) snapState, (IBlockState)
+                                currentState, vSnapshot.getUpdateFlag());
+                    }
+                    player.addStat(StatList.objectUseStats[Item.getIdFromItem(stack.getItem())], 1);
                 }
-                player.addStat(StatList.objectUseStats[Item.getIdFromItem(stack.getItem())], 1);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         ((IBlockSnapshotContainer) world).getCapturedSnapshots().clear();

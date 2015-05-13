@@ -24,18 +24,19 @@
  */
 package org.spongepowered.vanilla.interfaces;
 
+import com.flowpowered.math.vector.Vector3i;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.api.block.BlockSnapshot;
 
-import java.util.ArrayList;
+import java.util.Map;
 
 public interface IBlockSnapshotContainer {
     boolean isCapturingBlockSnapshots();
     boolean isRestoringBlockSnapshots();
     void captureBlockSnapshots(boolean captureSnapshots);
     void restoreBlockSnapshots(boolean restoreSnapshots);
-    ArrayList<BlockSnapshot> getCapturedSnapshots();
+    Map<Vector3i, BlockSnapshot> getCapturedSnapshots();
     void markAndNotifyBlock(BlockPos pos, Chunk chunk, IBlockState snapshotState, IBlockState newState, int flags);
 }
