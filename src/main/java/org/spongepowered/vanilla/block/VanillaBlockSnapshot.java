@@ -88,6 +88,10 @@ public final class VanillaBlockSnapshot implements BlockSnapshot {
         this.updateFlag = updateFlag;
     }
 
+    public int getUpdateFlag() {
+        return this.updateFlag;
+    }
+
     @Override
     public BlockState getState() {
         return (BlockState) this.blockState;

@@ -162,8 +162,8 @@ public final class VanillaHooks {
                         ((IBlockState) currentState).getBlock().onBlockAdded(world, vSnapshot.getPos(), ((IBlockState) currentState));
                     }
 
-                    // TODO Split up setBlockState in World
-                    // world.markAndNotifyBlock(snap.pos, null, oldBlock, newBlock, updateFlag);
+                    ((IBlockSnapshotContainer) world).markAndNotifyBlock(vSnapshot.getPos(), null, (IBlockState) snapState, (IBlockState)
+                                    currentState, vSnapshot.getUpdateFlag());
                 }
                 player.addStat(StatList.objectUseStats[Item.getIdFromItem(stack.getItem())], 1);
             }

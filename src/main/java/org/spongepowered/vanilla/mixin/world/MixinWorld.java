@@ -25,6 +25,7 @@
 package org.spongepowered.vanilla.mixin.world;
 
 import com.google.common.collect.Lists;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,6 +33,7 @@ import net.minecraft.profiler.Profiler;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import org.spongepowered.api.block.BlockSnapshot;
@@ -61,6 +63,9 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
 
     @Shadow private net.minecraft.world.border.WorldBorder worldBorder;
     @Shadow private boolean isRemote;
+    @Shadow abstract void markBlockForUpdate(BlockPos pos);
+    @Shadow abstract void notifyNeighborsRespectDebug(BlockPos pos, Block block);
+    @Shadow abstract void updateComparatorOutputLevel(BlockPos pos, Block block);
     private boolean captureSnapshots, restoreSnapshots;
     private final ArrayList<BlockSnapshot> capturedSnapshots = Lists.newArrayList();
     private BlockSnapshot injectCacheSnapshot;
@@ -76,14 +81,6 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
                         "sponge");
 
         this.worldBorder.addListener(new PlayerBorderListener());
-    }
-
-    @Inject(method = "spawnEntityInWorld", at = @At("HEAD"))
-    public void cancelEntitySpawnIfCapturingSnapshots(Entity entity, CallbackInfoReturnable<Boolean> ci) {
-        if (!this.isRemote && (entity == null || (entity instanceof net.minecraft.entity.item.EntityItem && this.restoreSnapshots))) {
-            ci.setReturnValue(false);
-        }
-
     }
 
     @Inject(method = "spawnEntityInWorld", locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true,
@@ -102,6 +99,13 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
         this.onSpawnEntityInWorld(entity, cir, i, j, flag);
     }
 
+    @Inject(method = "spawnEntityInWorld", at = @At("HEAD"))
+    public void cancelEntitySpawnIfCapturingSnapshots(Entity entity, CallbackInfoReturnable<Boolean> ci) {
+        if (!this.isRemote && (entity == null || (entity instanceof net.minecraft.entity.item.EntityItem && this.restoreSnapshots))) {
+            ci.setReturnValue(false);
+        }
+    }
+
     @Inject(method = "setBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;setBlockState(Lnet/minecraft/util/BlockPos;Lnet/minecraft/block/state/IBlockState;)Lnet/minecraft/block/state/IBlockState;"))
     public void createAndStoreBlockSnapshot(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> ci) {
         this.injectCacheSnapshot = null;
@@ -111,12 +115,21 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
         }
     }
 
-//    @Inject(method = "setBlockState", at = @At(value = "RETURN", ordinal = 3))
-//    public void purgeSnapshotIfNeeded(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> ci) {
-//        if (this.injectCacheSnapshot != null) {
-//            this.capturedSnapshots.remove(this.injectCacheSnapshot);
-//        }
-//    }
+    @Inject(method = "setBlockState", at = @At(value = "RETURN", ordinal = 2))
+    public void removeBlockSnapshotIfNullType(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> ci) {
+        if (this.injectCacheSnapshot != null){
+            this.capturedSnapshots.remove(this.injectCacheSnapshot);
+        }
+    }
+
+    @Inject(method = "setBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/Profiler;endSection()V", shift = At.Shift.BY, by
+            = 2), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
+    public void updateIfNoSnapshot(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable<Boolean> cir, Chunk chunk, Block block, IBlockState iblockstate1, Block block1) {
+        cir.setReturnValue(true);
+        if (this.injectCacheSnapshot == null) {
+            this.markAndNotifyBlock(pos, chunk, iblockstate1, newState, flags); // Modularize client and physic updates
+        }
+    }
 
     @Override
     public boolean isCapturingBlockSnapshots() {
@@ -141,5 +154,23 @@ public abstract class MixinWorld implements org.spongepowered.api.world.World, I
     @Override
     public ArrayList<BlockSnapshot> getCapturedSnapshots() {
         return this.capturedSnapshots;
+    }
+
+    @Override
+    public void markAndNotifyBlock(BlockPos pos, Chunk chunk, IBlockState snapshotState, IBlockState newState, int flags) {
+        if ((flags & 2) != 0 && (!this.isRemote || (flags & 4) == 0) && (chunk == null || chunk.isPopulated()))
+        {
+            this.markBlockForUpdate(pos);
+        }
+
+        if (!this.isRemote && (flags & 1) != 0)
+        {
+            this.notifyNeighborsRespectDebug(pos, snapshotState.getBlock());
+
+            if (newState.getBlock().hasComparatorInputOverride())
+            {
+                this.updateComparatorOutputLevel(pos, newState.getBlock());
+            }
+        }
     }
 }
