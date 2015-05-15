@@ -30,6 +30,7 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
+import net.minecraft.network.play.client.C10PacketCreativeInventoryAction;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
@@ -183,6 +184,20 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
                                                                  dropWholeStack && this.playerEntity.inventory.getCurrentItem() != null ? this.playerEntity.inventory
                                                                          .getCurrentItem().stackSize : 1);
 
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "processCreativeInventoryAction", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/entity/player/EntityPlayerMP;dropPlayerItemWithRandomChoice(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/item/EntityItem;"), cancellable = true)
+    public void injectDropItemFromCreativeInventory(C10PacketCreativeInventoryAction packetIn, CallbackInfo ci) {
+        ItemStack stack = (ItemStack) packetIn.getStack();
+        PlayerDropItemEvent event = SpongeEventFactory.createPlayerDropItem(Sponge.getGame(), (Player) this.playerEntity, null,
+                                                                            Sets.newHashSet((ItemStack) stack));
+
+        if (Sponge.getGame().getEventManager().post(event)) {
+            // TODO: find out if it's possible somehow to add the item back into the inventory if cancelled
+            // Otherwise it'll just do as the Forge impl (consume the item while not dropping anything)
             ci.cancel();
         }
     }
