@@ -86,7 +86,7 @@ public abstract class MixinServerConfigurationManager {
     }
 
     @Inject(method = "recreatePlayerEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayerMP;setSpawnPoint(Lnet/minecraft/util/BlockPos;Z)V"))
-    public void recreatePlayerEntityBedCheck(EntityPlayerMP playerIn, int dimension, boolean conqueredEnd, CallbackInfo ci) {
+    public void recreatePlayerEntityBedCheck(EntityPlayerMP playerIn, int dimension, boolean conqueredEnd, CallbackInfoReturnable<EntityPlayerMP> ci) {
         isBedSpawn = true;
     }
 
