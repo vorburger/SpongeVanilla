@@ -196,7 +196,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
                                                                             Sets.newHashSet((ItemStack) stack));
 
         if (Sponge.getGame().getEventManager().post(event)) {
-            // TODO: find out if it's possible somehow to add the item back into the inventory if cancelled
+            // TODO: find out if it's possible somehow to add the item back into the inventory if cancelled (see above)
             // Otherwise it'll just do as the Forge impl (consume the item while not dropping anything)
             ci.cancel();
         }
