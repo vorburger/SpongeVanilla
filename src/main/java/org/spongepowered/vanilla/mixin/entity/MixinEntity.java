@@ -24,11 +24,13 @@
  */
 package org.spongepowered.vanilla.mixin.entity;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -40,22 +42,31 @@ import javax.annotation.Nullable;
 public abstract class MixinEntity {
 
     @Nullable private NBTTagCompound customEntityData;
+    @Shadow abstract void setRotationYawHead(float rotation);
 
     @Inject(method = "<init>(Lnet/minecraft/world/World;)V", at = @At("RETURN"), remap = false)
     public void onConstructed(World world, CallbackInfo ci) {
         Sponge.getGame().getEventManager().post(SpongeEventFactory.createEntityConstructing(Sponge.getGame(), (Entity) this));
     }
 
-    @Inject(method = "readFromNBT(Lnet/minecraft/nbt/NBTTagCompound;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;readEntityFromNBT(Lnet/minecraft/nbt/NBTTagCompound;)V"))
+    @Inject(method = "readFromNBT", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/entity/Entity;readEntityFromNBT(Lnet/minecraft/nbt/NBTTagCompound;)V"))
     public void preReadFromNBTInject(NBTTagCompound tagCompound, CallbackInfo ci) {
         if (tagCompound.hasKey("ForgeData")) {
             this.customEntityData = tagCompound.getCompoundTag("ForgeData");
         }
     }
 
-    @Inject(method = "writeToNBT(Lnet/minecraft/nbt/NBTTagCompound;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;writeEntityToNBT(Lnet/minecraft/nbt/NBTTagCompound;)V"))
+    @Inject(method = "readFromNBT", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;prevRotationPitch:F", shift = At.Shift.AFTER))
+    public void onCallSetRotationYawHead(NBTTagCompound tagCompound, CallbackInfo ci) {
+        setRotationYawHead(((net.minecraft.entity.Entity) (Object) this).rotationYaw);
+        if ((Entity) (Object) (this) instanceof EntityLivingBase) {
+            ((EntityLivingBase) (Object) this).renderYawOffset = ((net.minecraft.entity.Entity) (Object) this).rotationYaw;
+        }
+    }
+
+    @Inject(method = "writeToNBT", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/entity/Entity;writeEntityToNBT(Lnet/minecraft/nbt/NBTTagCompound;)V"))
     public void preWriteToNBTInject(NBTTagCompound tagCompound, CallbackInfo ci) {
         if (this.customEntityData != null) {
             tagCompound.setTag("ForgeData", this.customEntityData);
