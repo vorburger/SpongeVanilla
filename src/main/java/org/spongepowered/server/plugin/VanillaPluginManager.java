@@ -28,18 +28,28 @@ import static com.google.common.base.Objects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.inject.Singleton;
+
+import ch.vorburger.hotea.minecraft.api.HotPluginManager;
 import net.minecraft.launchwrapper.Launch;
+
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.event.SpongeEventFactoryUtils;
+import org.spongepowered.api.event.game.state.GameStartingServerEvent;
+import org.spongepowered.api.event.game.state.GameStateEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.common.SpongeImpl;
+import org.spongepowered.common.event.SpongeEventManager;
 import org.spongepowered.plugin.meta.PluginMetadata;
 import org.spongepowered.plugin.meta.SpongeExtension;
 import org.spongepowered.server.launch.plugin.PluginCandidate;
+import org.spongepowered.server.launch.plugin.PluginScanner;
 import org.spongepowered.server.launch.plugin.VanillaLaunchPluginManager;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,7 +63,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Singleton
-public class VanillaPluginManager implements PluginManager {
+public class VanillaPluginManager implements PluginManager, HotPluginManager {
 
     private final Map<String, PluginContainer> plugins = new HashMap<>();
     private final Map<Object, PluginContainer> pluginInstances = new IdentityHashMap<>();
@@ -63,22 +73,33 @@ public class VanillaPluginManager implements PluginManager {
         plugin.getInstance().ifPresent(instance -> this.pluginInstances.put(instance, plugin));
     }
 
+    private void unregisterPlugin(PluginContainer plugin) { // HotPluginManager
+        this.plugins.remove(plugin.getId());
+        plugin.getInstance().ifPresent(instance -> this.pluginInstances.remove(instance));
+    }
+
     public void loadPlugins() throws IOException {
         for (PluginContainer container : SpongeImpl.getInternalPlugins()) {
             registerPlugin(container);
         }
 
         Map<String, PluginCandidate> candidateMap = VanillaLaunchPluginManager.getPlugins();
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        loadPlugins(candidateMap, classLoader, true);
+    }
 
+    private Iterable<PluginContainer> loadPlugins(Map<String, PluginCandidate> candidateMap, ClassLoader classLoader, boolean addSourceToLaunchClassLoader) {
+    	Collection<PluginContainer> loadedPluginContainers = new ArrayList<PluginContainer>(candidateMap.size());
         try {
             for (PluginCandidate candidate : PluginSorter.sort(checkRequirements(candidateMap))) {
-                loadPlugin(candidate);
+                loadPlugin(candidate, classLoader, addSourceToLaunchClassLoader).ifPresent(p -> loadedPluginContainers.add(p));
             }
         } catch (Throwable e) {
             throw PluginReporter.crash(e, candidateMap.values());
         }
+        return loadedPluginContainers; 
     }
-
+  
     private Set<PluginCandidate> checkRequirements(Map<String, PluginCandidate> candidates) {
         Set<PluginCandidate> successfulCandidates = new HashSet<>(candidates.size());
         List<PluginCandidate> failedCandidates = new ArrayList<>();
@@ -129,10 +150,10 @@ public class VanillaPluginManager implements PluginManager {
         return successfulCandidates;
     }
 
-    private void loadPlugin(PluginCandidate candidate) {
+    private Optional<PluginContainer> loadPlugin(PluginCandidate candidate, ClassLoader classLoader, boolean addSourceToLaunchClassLoader) {
         final String id = candidate.getId();
 
-        if (candidate.getSource().isPresent()) {
+        if (addSourceToLaunchClassLoader && candidate.getSource().isPresent()) {
             try {
                 // Add JAR to classpath
                 Launch.classLoader.addURL(candidate.getSource().get().toUri().toURL());
@@ -146,7 +167,7 @@ public class VanillaPluginManager implements PluginManager {
         final String version = firstNonNull(metadata.getVersion(), "unknown");
 
         try {
-            Class<?> pluginClass = Class.forName(candidate.getPluginClass());
+            Class<?> pluginClass = classLoader.loadClass(candidate.getPluginClass());
             SpongeExtension ext = metadata.getExtension("sponge");
             PluginContainer container = new VanillaPluginContainer(id, pluginClass,
                     metadata.getName(), metadata.getVersion(), metadata.getDescription(), metadata.getUrl(), metadata.getAuthors(),
@@ -156,8 +177,10 @@ public class VanillaPluginManager implements PluginManager {
             Sponge.getEventManager().registerListeners(container, container.getInstance().get());
 
             SpongeImpl.getLogger().info("Loaded plugin: {} {} (from {})", name, version, candidate.getDisplaySource());
+            return Optional.of(container);
         } catch (Throwable e) {
             SpongeImpl.getLogger().error("Failed to load plugin: {} {} (from {})", name, version, candidate.getDisplaySource(), e);
+            return Optional.empty();
         }
     }
 
@@ -186,5 +209,44 @@ public class VanillaPluginManager implements PluginManager {
     public boolean isLoaded(String id) {
         return this.plugins.containsKey(id);
     }
+
+    
+    // HotPluginManager
+    
+	@Override
+	public HotPlugins loadPlugins(URLClassLoader classLoader) {
+		PluginScanner pluginScanner = new PluginScanner();
+		pluginScanner.scanClassPath(classLoader, true);
+		Map<String, PluginCandidate> candidateMap = pluginScanner.getPlugins();
+		Iterable<PluginContainer> hotPluginContainers = loadPlugins(candidateMap, classLoader, false);
+		for (PluginContainer hotPluginContainer : hotPluginContainers) {
+			post(GameStartingServerEvent.class, hotPluginContainer);
+		}
+		return new HotPluginsImpl(hotPluginContainers);
+	}
+
+	@Override
+	public void unloadPlugins(HotPlugins hotPlugins) {
+		HotPluginsImpl hotPluginsImpl = (HotPluginsImpl) hotPlugins;  
+		Iterable<PluginContainer> hotPluginContainers = hotPluginsImpl.hotPluginContainers;
+		for (PluginContainer hotPluginContainer : hotPluginContainers) {
+			post(GameStoppingServerEvent.class, hotPluginContainer);
+			hotPluginContainer.getInstance().ifPresent(p -> Sponge.getEventManager().unregisterPluginListeners(p));
+			unregisterPlugin(hotPluginContainer);
+		}
+	}
+
+	private void post(Class<? extends GameStateEvent> type, PluginContainer pluginContainer) {
+		// do NOT getGame().setState(..)
+		final GameStateEvent event = SpongeEventFactoryUtils.createState(type, Sponge.getGame());
+		((SpongeEventManager)Sponge.getEventManager()).post(event, pluginContainer);
+	}
+	
+	private static class HotPluginsImpl implements HotPlugins {
+		private final Iterable<PluginContainer> hotPluginContainers;
+		HotPluginsImpl(Iterable<PluginContainer> hotPluginContainers) {
+			this.hotPluginContainers = hotPluginContainers;
+		}
+	}
 
 }

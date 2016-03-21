@@ -67,7 +67,7 @@ import java.util.zip.ZipEntry;
 
 import javax.annotation.Nullable;
 
-final class PluginScanner {
+public final class PluginScanner {
 
     private static final String CLASS_EXTENSION = ".class";
     private static final String JAR_EXTENSION = ".jar";
@@ -90,7 +90,7 @@ final class PluginScanner {
         return this.plugins;
     }
 
-    void scanClassPath(URLClassLoader loader, boolean scanJars) {
+    public void scanClassPath(URLClassLoader loader, boolean scanJars) {
         Set<URI> sources = new HashSet<>();
 
         for (URL url : loader.getURLs()) {
